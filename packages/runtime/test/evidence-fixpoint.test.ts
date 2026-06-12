@@ -1,7 +1,16 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { EvidenceFixpointEngine, RuntimeError, type EvidenceDerivationRule } from "../src/index.ts";
+import {
+  DeterministicTextEvidenceSource,
+  EvidenceFixpointEngine,
+  RuntimeError,
+  createEvidenceSourceRegistry,
+  evidenceGapsForLedger,
+  resolveLedgerWithEvidence,
+  type EvidenceDerivationRule,
+  type LedgerEntry,
+} from "../src/index.ts";
 
 const assertedAt = "2026-06-13T00:00:00.000Z";
 
@@ -107,3 +116,68 @@ test("should_expire_facts_by_injected_clock_and_propagate_decay", () => {
   assert.equal(engine.getFact("approval:1").status, "retracted");
   assert.equal(engine.getFact("authority:ok").status, "retracted");
 });
+
+test("should_resolve_obligation_when_evidence_join_finds_matching_support", () => {
+  const [entry] = resolveLedgerWithEvidence(
+    [ledgerEntry("obl:evidence", "evidence")],
+    new DeterministicTextEvidenceSource(),
+    ["Retention check passed; evidence resolved."],
+    assertedAt,
+  );
+
+  assert.equal(entry?.obligation.status, "satisfied");
+});
+
+test("should_mark_contradictory_evidence_as_violated", () => {
+  const [entry] = resolveLedgerWithEvidence(
+    [ledgerEntry("obl:evidence", "evidence")],
+    new DeterministicTextEvidenceSource(),
+    ["Evidence sources conflict and contradict one another."],
+    assertedAt,
+  );
+
+  assert.equal(entry?.obligation.status, "violated");
+});
+
+test("should_map_budget_exhaustion_to_unknown_gap", () => {
+  const [entry] = resolveLedgerWithEvidence(
+    [ledgerEntry("obl:evidence", "evidence")],
+    new DeterministicTextEvidenceSource(),
+    ["Retention check service TIMEOUT after 3 retries."],
+    assertedAt,
+  );
+  assert.equal(entry?.obligation.status, "unknown");
+
+  const gaps = evidenceGapsForLedger(entry === undefined ? [] : [entry]);
+
+  assert.deepEqual(gaps.map((gap) => gap.kind), ["budget_exhausted"]);
+});
+
+test("should_reject_duplicate_evidence_source_registration", () => {
+  const registry = createEvidenceSourceRegistry();
+  const source = new DeterministicTextEvidenceSource();
+  registry.register(source);
+
+  assert.throws(() => registry.register(source), RuntimeError);
+});
+
+function ledgerEntry(
+  id: string,
+  type: "authority" | "reconciliation" | "evidence" | "freshness" | "inherited_invariant",
+): LedgerEntry {
+  return {
+    claimId: "claim:1",
+    obligation: {
+      id,
+      caseId: "case:1",
+      type,
+      mandatory: true,
+      blocking: true,
+      status: "unknown",
+      triggeredBy: ["event:1"],
+      requiredEvidence: ["required_evidence_resolved"],
+      safeDefault: type === "authority" ? "deny" : "pending",
+      rationale: "test obligation",
+    },
+  };
+}

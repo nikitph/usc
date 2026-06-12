@@ -8,14 +8,16 @@ import {
   type Fact,
   type Rulebase,
 } from "@usc/kernel";
-import type { MotifObligation } from "@usc/shared/generated";
 import {
+  DeterministicTextEvidenceSource,
   KeywordExtractionBackend,
   TerminalClaimKeywordDetector,
   buildProcessIrLite,
   createExtractionRegistry,
+  evidenceGapsForLedger,
   materializeObligationLedger,
   parseMotifTokens,
+  resolveLedgerWithEvidence,
   runtimeFactsForKernel,
   type CandidateTerminalClaim,
   type ExtractionRegistry,
@@ -110,12 +112,17 @@ export class ActionGateService {
     const ast = parseMotifTokens(lexer.tokens, { rootId: "action" });
     const claims = terminalClaimsFor(request, this.#terminalDetector, source.id, actionHash);
     const ir = processIrFor(request, claims);
-    const ledger = resolveEvidence(materializeObligationLedger(this.#rulebase, ir, actionHash), request);
+    const ledger = resolveLedgerWithEvidence(
+      materializeObligationLedger(this.#rulebase, ir, actionHash),
+      new DeterministicTextEvidenceSource(),
+      contextTextsFor(request),
+      observedAtFor(request),
+    );
     const facts = factsForKernel(ast, ir, ledger);
     const terminalVerdict = terminalVerdictFor(evaluate(this.#rulebase, facts).verdicts, claims[0]?.id);
     const gateVerdict = gateVerdictFor(terminalVerdict, ledger);
-    const gaps = gapsFor(terminalVerdict, request, ledger);
-    const rationale = rationaleFor(gateVerdict, terminalVerdict, ledger, request);
+    const gaps = gapsFor(terminalVerdict, ledger);
+    const rationale = rationaleFor(gateVerdict, terminalVerdict, ledger);
     const verdictArtifact = await this.#putArtifact("verdict", {
       check: "action_gate",
       terminalValidity: terminalVerdict.verdict.value,
@@ -237,6 +244,10 @@ function sourceTextFor(request: ActionGateRequest): string {
   ].join("\n");
 }
 
+function contextTextsFor(request: ActionGateRequest): readonly string[] {
+  return [request.action.name, request.action.target, request.action.declaredGoal, ...request.context.map((entry) => entry.text)];
+}
+
 function terminalClaimsFor(
   request: ActionGateRequest,
   detector: TerminalClaimDetector,
@@ -273,31 +284,10 @@ function processIrFor(request: ActionGateRequest, claims: readonly CandidateTerm
   ]);
 }
 
-function resolveEvidence(entries: readonly LedgerEntry[], request: ActionGateRequest): readonly LedgerEntry[] {
-  const hasTimeout = request.context.some((entry) => /timeout/i.test(entry.text));
-  const hasExpiredApproval = approvalExpiredBeforeAction(request);
-  return entries.map((entry) => {
-    const status: MotifObligation["status"] =
-      hasExpiredApproval && entry.obligation.type === "authority"
-        ? "violated"
-        : hasTimeout && entry.obligation.type === "evidence"
-          ? "unknown"
-          : entry.obligation.status;
-    return {
-      ...entry,
-      obligation: { ...entry.obligation, status },
-    };
-  });
-}
-
-function approvalExpiredBeforeAction(request: ActionGateRequest): boolean {
-  const actionTime = request.context.map((entry) => Date.parse(entry.ts)).filter(Number.isFinite).sort((a, b) => b - a)[0];
-  if (actionTime === undefined) return false;
-  for (const entry of request.context) {
-    const match = /valid until ([0-9T:-]+Z)/i.exec(entry.text);
-    if (match?.[1] !== undefined && Date.parse(match[1]) < actionTime) return true;
-  }
-  return false;
+function observedAtFor(request: ActionGateRequest): string {
+  return [...request.context]
+    .map((entry) => entry.ts)
+    .sort((left, right) => Date.parse(right) - Date.parse(left))[0] ?? "2026-06-13T00:00:00.000Z";
 }
 
 function factsForKernel(
@@ -343,29 +333,18 @@ function gateVerdictFor(terminal: CheckVerdict, ledger: readonly LedgerEntry[]):
 
 function gapsFor(
   terminal: CheckVerdict,
-  request: ActionGateRequest,
   ledger: readonly LedgerEntry[],
 ): readonly EvidenceGap[] {
-  if (request.context.some((entry) => /timeout/i.test(entry.text))) {
-    return ledger
-      .filter((entry) => entry.obligation.status === "unknown")
-      .map((entry) => ({
-        kind: "budget_exhausted",
-        description: `evidence budget exhausted for obligation "${entry.obligation.id}"`,
-        obligationId: entry.obligation.id,
-      }));
-  }
-  return terminal.verdict.gaps ?? [];
+  return terminal.verdict.value === "unknown" ? evidenceGapsForLedger(ledger) : terminal.verdict.gaps ?? [];
 }
 
 function rationaleFor(
   gateVerdict: GateVerdict,
   terminal: CheckVerdict,
   ledger: readonly LedgerEntry[],
-  request: ActionGateRequest,
 ): readonly string[] {
   const violated = ledger.find((entry) => entry.obligation.status === "violated");
-  if (violated !== undefined && approvalExpiredBeforeAction(request)) {
+  if (violated !== undefined) {
     return [`${violated.obligation.type} obligation violated`, "approval evidence expired before execution"];
   }
   return [`terminal_validity=${terminal.verdict.value}`, `verdict=${gateVerdict}`];

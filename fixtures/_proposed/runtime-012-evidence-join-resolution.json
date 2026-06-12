@@ -1,0 +1,12 @@
+{
+  "id": "runtime-012-evidence-join-resolution",
+  "subsystem": "runtime",
+  "name": "evidence-join-resolution",
+  "rationale": "M2-03 draft fixture: deterministic evidence source facts join with obligation ledger entries through support sets and mark resolved obligations satisfied.",
+  "operation": "resolve evidence obligation with context text 'evidence resolved'",
+  "expect": {
+    "obligationId": "obl:evidence",
+    "status": "satisfied"
+  },
+  "humanAdjudication": "proposed"
+}

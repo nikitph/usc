@@ -1,6 +1,13 @@
 export { ObligationLedgerError, ParserError, ProcessIrError, RuntimeError } from "./errors.ts";
 export { EvidenceFixpointEngine } from "./evidence.ts";
 export {
+  DeterministicTextEvidenceSource,
+  createEvidenceSourceRegistry,
+  evidenceGapsForLedger,
+  evidenceJoinRulesForLedger,
+  resolveLedgerWithEvidence,
+} from "./evidence-sources.ts";
+export {
   KeywordExtractionBackend,
   TerminalClaimKeywordDetector,
   createExtractionRegistry,
@@ -33,6 +40,10 @@ export type {
   EvidenceDerivationRule,
   EvidenceFact,
   EvidenceFactDraft,
+  EvidenceGapLike,
+  EvidenceSource,
+  EvidenceSourceInput,
+  EvidenceSourceRegistry,
   EvidenceFactStatus,
   FixpointRunReport,
   LexerRunResult,

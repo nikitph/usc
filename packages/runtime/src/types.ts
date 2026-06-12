@@ -137,4 +137,26 @@ export interface FixpointRunReport {
   readonly derivedFactIds: readonly string[];
 }
 
+export interface EvidenceSourceInput {
+  readonly obligation: MotifObligation;
+  readonly contextTexts: readonly string[];
+  readonly observedAt: string;
+}
+
+export interface EvidenceSource {
+  readonly name: string;
+  fetch(input: EvidenceSourceInput): readonly EvidenceFactDraft[];
+}
+
+export interface EvidenceSourceRegistry {
+  register(source: EvidenceSource): void;
+  get(name: string): EvidenceSource;
+}
+
+export interface EvidenceGapLike {
+  readonly kind: "missing_evidence" | "stale_evidence" | "contradictory_evidence" | "budget_exhausted" | "below_extraction_bar";
+  readonly description: string;
+  readonly obligationId?: string;
+}
+
 export type { ArtifactEnvelope, ArtifactId, ArtifactRepository, Fact, MotifName, MotifObligation, MotifToken, ProcessIrEventType };

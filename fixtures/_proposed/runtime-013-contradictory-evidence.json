@@ -1,0 +1,12 @@
+{
+  "id": "runtime-013-contradictory-evidence",
+  "subsystem": "runtime",
+  "name": "contradictory-evidence-violates-obligation",
+  "rationale": "M2-03 draft fixture: contradictory evidence is not treated as absence; it derives a violated obligation status.",
+  "operation": "resolve evidence obligation with context text containing conflict/contradict",
+  "expect": {
+    "obligationId": "obl:evidence",
+    "status": "violated"
+  },
+  "humanAdjudication": "proposed"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "runtime-014-budget-exhausted-gap",
+  "subsystem": "runtime",
+  "name": "budget-exhausted-gap",
+  "rationale": "M2-03 draft fixture: evidence source budget exhaustion keeps the obligation unknown and maps to a budget_exhausted gap, never allow.",
+  "operation": "resolve evidence obligation with context text containing TIMEOUT",
+  "expect": {
+    "obligationId": "obl:evidence",
+    "status": "unknown",
+    "gapKind": "budget_exhausted"
+  },
+  "humanAdjudication": "proposed"
+}
