@@ -31,6 +31,10 @@ export {
   runtimeFactsForKernel,
 } from "./ledger.ts";
 export { parseMotifTokens, runtimeAstToFacts } from "./parser.ts";
+export {
+  rankRecommendations,
+  recommendationArtifact,
+} from "./recommendation.ts";
 export type {
   DetectedEvent,
   LedgerEntry,
@@ -62,3 +66,10 @@ export type {
   GraftPlanBody,
   GraftPlanDraft,
 } from "./graft-plan.ts";
+export type {
+  AntiPatternWarning,
+  RankedRecommendation,
+  RecommendationArtifactBody,
+  RecommendationArtifactInput,
+  RecommendationCandidate,
+} from "./recommendation.ts";

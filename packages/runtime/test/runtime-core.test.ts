@@ -14,6 +14,8 @@ import {
   obligationLedgerToFacts,
   parseMotifTokens,
   processIrTerminalClaimFacts,
+  rankRecommendations,
+  recommendationArtifact,
   runtimeFactsForKernel,
   validateMandatoryRecompile,
   RuntimeError,
@@ -164,6 +166,57 @@ test("should_reject_graft_plan_when_recompile_hash_is_missing", () => {
     () => validateMandatoryRecompile({ ...body, recompile: { ...body.recompile, afterFactsHash: "" } }),
     RuntimeError,
   );
+});
+
+test("should_rank_recommendations_by_multi_symptom_collapse", () => {
+  const ranked = rankRecommendations([
+    {
+      id: "recommendation:single",
+      title: "Patch missing feedback",
+      graftPlanArtifactId: "a".repeat(64),
+      collapsedSymptoms: ["missing_feedback"],
+      noveltyScore: 0.9,
+      antiPatternWarnings: [],
+    },
+    {
+      id: "recommendation:collapse",
+      title: "Add bounded feedback authority",
+      graftPlanArtifactId: "b".repeat(64),
+      collapsedSymptoms: ["missing_feedback", "stale_authority", "terminal_overclaim"],
+      noveltyScore: 0.8,
+      antiPatternWarnings: [{ antiPatternId: "anti-pattern:stale-authority", proximity: 0.5, severity: "medium" }],
+    },
+  ]);
+
+  assert.equal(ranked[0]?.candidate.id, "recommendation:collapse");
+  assert.equal(ranked[0]?.rank, 1);
+  assert.equal(ranked[0]?.diagnosisInformationGain, 2.35);
+});
+
+test("should_create_recommendation_artifact_with_rank_and_warnings", () => {
+  const ranked = rankRecommendations([
+    {
+      id: "recommendation:collapse",
+      title: "Add bounded feedback authority",
+      graftPlanArtifactId: "b".repeat(64),
+      collapsedSymptoms: ["terminal_overclaim", "missing_feedback"],
+      noveltyScore: 0.75,
+      antiPatternWarnings: [{ antiPatternId: "anti-pattern:stale-authority", proximity: 0.6, severity: "high" }],
+    },
+  ]);
+  const topRecommendation = ranked[0];
+  assert.ok(topRecommendation !== undefined);
+
+  const artifact = recommendationArtifact({
+    rankedRecommendation: topRecommendation,
+    rulebaseHash: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    createdAt: "2026-06-13T00:00:00.000Z",
+  });
+
+  assert.equal(artifact.kind, "recommendation");
+  assert.deepEqual(artifact.parents, ["b".repeat(64)]);
+  assert.equal(artifact.body["diagnosisInformationGainRank"], 1);
+  assert.equal(artifact.body["emitterReady"], false);
 });
 
 function token(

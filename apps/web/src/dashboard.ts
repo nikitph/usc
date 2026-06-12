@@ -61,6 +61,15 @@ export interface RetrievalRow {
   readonly autoInsertEnabled: false;
 }
 
+export interface RecommendationRow {
+  readonly id: string;
+  readonly title: string;
+  readonly rank: number;
+  readonly diagnosisInformationGain: number;
+  readonly collapsedSymptoms: readonly string[];
+  readonly warnings: readonly string[];
+}
+
 export const trapRuns: readonly TrapRun[] = [
   {
     id: "trap-001",
@@ -160,6 +169,25 @@ export const retrievalRows: readonly RetrievalRow[] = [
   },
 ];
 
+export const recommendationRows: readonly RecommendationRow[] = [
+  {
+    id: "recommendation:bounded-feedback-authority",
+    title: "Add bounded feedback authority",
+    rank: 1,
+    diagnosisInformationGain: 2.35,
+    collapsedSymptoms: ["missing_feedback", "stale_authority", "terminal_overclaim"],
+    warnings: ["near anti-pattern: stale authority close"],
+  },
+  {
+    id: "recommendation:patch-feedback",
+    title: "Patch missing feedback",
+    rank: 2,
+    diagnosisInformationGain: 0.9,
+    collapsedSymptoms: ["missing_feedback"],
+    warnings: [],
+  },
+];
+
 export function dashboardMetrics(runs: readonly TrapRun[]): DashboardMetrics {
   return {
     total: runs.length,
@@ -210,4 +238,8 @@ export function topRetrievalRows(rows: readonly RetrievalRow[], limit: number): 
       return score === 0 ? left.id.localeCompare(right.id) : score;
     })
     .slice(0, limit);
+}
+
+export function orderedRecommendationRows(rows: readonly RecommendationRow[]): readonly RecommendationRow[] {
+  return [...rows].sort((left, right) => left.rank - right.rank || left.id.localeCompare(right.id));
 }

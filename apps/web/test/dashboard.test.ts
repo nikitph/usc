@@ -5,6 +5,8 @@ import {
   dashboardMetrics,
   patternReviewMetrics,
   patternReviewRows,
+  orderedRecommendationRows,
+  recommendationRows,
   reviewStateClass,
   retrievalRows,
   topRetrievalRows,
@@ -52,5 +54,12 @@ test("should_sort_read_only_retrieval_rows_by_score", () => {
   assert.deepEqual(
     topRetrievalRows(retrievalRows, 2).map((row) => row.id),
     ["transfer:circuit-breaker:exposure-cutoff", "transfer:stale-cache:expired-sanction"],
+  );
+});
+
+test("should_order_recommendation_rows_by_diagnosis_gain_rank", () => {
+  assert.deepEqual(
+    orderedRecommendationRows(recommendationRows).map((row) => row.id),
+    ["recommendation:bounded-feedback-authority", "recommendation:patch-feedback"],
   );
 });

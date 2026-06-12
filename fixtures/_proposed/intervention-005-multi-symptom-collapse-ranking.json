@@ -1,0 +1,14 @@
+{
+  "id": "intervention-005-multi-symptom-collapse-ranking",
+  "subsystem": "intervention",
+  "name": "multi-symptom-collapse-ranking",
+  "rationale": "M4-03 draft fixture: a recommendation that explains missing feedback, stale authority, and terminal overclaim outranks a single-symptom patch even with an anti-pattern proximity warning.",
+  "operation": "rank recommendation candidates by diagnosis-information-gain",
+  "expect": {
+    "topRecommendation": "recommendation:collapse",
+    "diagnosisInformationGain": 2.35,
+    "warnings": ["anti-pattern:stale-authority"],
+    "emitterReady": false
+  },
+  "humanAdjudication": "proposed"
+}

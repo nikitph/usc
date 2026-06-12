@@ -2,6 +2,8 @@ import {
   dashboardMetrics,
   patternReviewMetrics,
   patternReviewRows,
+  orderedRecommendationRows,
+  recommendationRows,
   reviewStateClass,
   retrievalRows,
   topRetrievalRows,
@@ -9,6 +11,7 @@ import {
   verdictClass,
   type LedgerRow,
   type PatternReviewRow,
+  type RecommendationRow,
   type RetrievalRow,
   type TrapRun,
 } from "./dashboard.ts";
@@ -74,6 +77,19 @@ app.innerHTML = `
       </div>
       <div class="retrieval-list">
         ${topRetrievalRows(retrievalRows, 3).map(retrievalRow).join("")}
+      </div>
+    </section>
+
+    <section class="recommendation-panel" aria-label="recommendations">
+      <div class="review-header">
+        <div>
+          <p class="eyebrow">Intervention</p>
+          <h2>Recommendation Ranking</h2>
+        </div>
+        <div class="status-pill">read-only</div>
+      </div>
+      <div class="recommendation-list">
+        ${orderedRecommendationRows(recommendationRows).map(recommendationRow).join("")}
       </div>
     </section>
   </section>
@@ -143,6 +159,18 @@ function retrievalRow(row: RetrievalRow): string {
         <div><dt>richness</dt><dd>${row.richnessScore}</dd></div>
         <div><dt>score</dt><dd>${row.score}</dd></div>
       </dl>
+    </article>
+  `;
+}
+
+function recommendationRow(row: RecommendationRow): string {
+  const warnings = row.warnings.length === 0 ? "no nearby anti-pattern" : row.warnings.join(", ");
+  return `
+    <article class="recommendation-row">
+      <strong>#${row.rank} ${row.title}</strong>
+      <span>gain ${row.diagnosisInformationGain}</span>
+      <small>${row.collapsedSymptoms.join(", ")}</small>
+      <em>${warnings}</em>
     </article>
   `;
 }

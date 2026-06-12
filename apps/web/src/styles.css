@@ -113,7 +113,8 @@ h3 {
 .runs-panel,
 .detail-panel,
 .review-panel,
-.retrieval-panel {
+.retrieval-panel,
+.recommendation-panel {
   background: #ffffff;
   border: 1px solid #dbe3dd;
   border-radius: 8px;
@@ -132,7 +133,8 @@ h3 {
 }
 
 .review-panel,
-.retrieval-panel {
+.retrieval-panel,
+.recommendation-panel {
   margin: 16px auto 0;
   max-width: 1180px;
 }
@@ -253,6 +255,42 @@ h3 {
 .retrieval-row dd {
   font-weight: 800;
   margin: 2px 0 0;
+}
+
+.recommendation-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.recommendation-row {
+  align-items: center;
+  background: #f8faf8;
+  border: 1px solid #dbe3dd;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 90px minmax(220px, 0.6fr) minmax(220px, 0.7fr);
+  padding: 12px;
+}
+
+.recommendation-row strong,
+.recommendation-row small,
+.recommendation-row em {
+  overflow-wrap: anywhere;
+}
+
+.recommendation-row span {
+  font-weight: 800;
+}
+
+.recommendation-row small {
+  color: #5b6d62;
+}
+
+.recommendation-row em {
+  color: #76510b;
+  font-style: normal;
 }
 
 .run-button {
@@ -378,7 +416,8 @@ th {
   .metrics-grid,
   .workspace,
   .retrieval-row,
-  .retrieval-row dl {
+  .retrieval-row dl,
+  .recommendation-row {
     grid-template-columns: 1fr;
   }
 }
