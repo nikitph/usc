@@ -88,6 +88,7 @@ export function buildFactIndex(facts: readonly Fact[]): FactIndex {
   const inherited = new Map<string, Set<string>>();
   const weakened = new Map<string, Set<string>>();
   const unknownInvariants = new Map<string, Set<string>>();
+  const obligationById = new Map<string, string>();
   let mode: EvaluationMode | undefined;
 
   for (const factInstance of facts) {
@@ -126,9 +127,16 @@ export function buildFactIndex(facts: readonly Fact[]): FactIndex {
         nodes.add(arg(factInstance, 0, 1));
         break;
       case "terminal_claim":
-        terminalClaims.set(arg(factInstance, 0, 2), arg(factInstance, 1, 2));
+        setSingleValue(
+          terminalClaims,
+          arg(factInstance, 0, 2),
+          arg(factInstance, 1, 2),
+          "terminal_claim",
+        );
         break;
       case "obligation": {
+        const obligationId = arg(factInstance, 0, 6);
+        setSingleValue(obligationById, obligationId, factInstance.args.join("\u0000"), "obligation");
         const claimId = arg(factInstance, 1, 6);
         const obligationType = arg(factInstance, 2, 6);
         if (!OBLIGATION_TYPES.has(obligationType)) {
@@ -147,7 +155,7 @@ export function buildFactIndex(facts: readonly Fact[]): FactIndex {
           fail(`obligation: unknown status "${status}"`);
         }
         const entry: ObligationFact = {
-          id: arg(factInstance, 0, 6),
+          id: obligationId,
           obligationType: obligationType as ObligationType,
           status: status as DischargeStatus,
           mandatory: mandatoryFlag === "mandatory",
@@ -161,7 +169,7 @@ export function buildFactIndex(facts: readonly Fact[]): FactIndex {
       case "artifact": {
         const kind = arg(factInstance, 1, 2);
         if (!ARTIFACT_KINDS.has(kind)) fail(`artifact: unknown kind "${kind}"`);
-        artifactKinds.set(arg(factInstance, 0, 2), kind);
+        setSingleValue(artifactKinds, arg(factInstance, 0, 2), kind, "artifact");
         break;
       }
       case "parent":
@@ -210,4 +218,12 @@ export function buildFactIndex(facts: readonly Fact[]): FactIndex {
     unknownInvariantsByNode: unknownInvariants,
     mode,
   };
+}
+
+function setSingleValue(map: Map<string, string>, key: string, value: string, predicate: string): void {
+  const existing = map.get(key);
+  if (existing !== undefined && existing !== value) {
+    fail(`${predicate}: conflicting values for "${key}"`);
+  }
+  map.set(key, value);
 }
