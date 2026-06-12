@@ -16,5 +16,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["src", "rulebase"]
+  "include": ["src", "test", "rulebase"]
 }

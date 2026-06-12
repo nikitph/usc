@@ -51,8 +51,15 @@ export interface MotifCollision {
   readonly provenance: string;
 }
 
-/** A rule the human has adjudicated, ready for the evaluator. */
-export interface TranscribedObligationRule {
+/**
+ * Provenance statuses for rulebase data: "transcribed" = copied from
+ * paper/blueprint/adjudicated fixtures; "drafted" = agent-drafted with
+ * explicit owner approval, grounded but not spelled out in the sources.
+ */
+export type RulebaseEntryStatus = "transcribed" | "drafted";
+
+/** A rule with encoded semantics, ready for the evaluator. */
+export interface ActiveObligationRule {
   readonly id: string;
   readonly eventType: ProcessIrEventType;
   readonly opens: ObligationType;
@@ -60,7 +67,7 @@ export interface TranscribedObligationRule {
   readonly safeDefault: ObligationSafeDefault;
   readonly mandatory: boolean;
   readonly blocking: boolean;
-  readonly status: "transcribed";
+  readonly status: RulebaseEntryStatus;
   readonly provenance: string;
 }
 
@@ -77,7 +84,7 @@ export interface TodoObligationRule {
   readonly provenance: string;
 }
 
-export type ObligationRule = TranscribedObligationRule | TodoObligationRule;
+export type ObligationRule = ActiveObligationRule | TodoObligationRule;
 
 export interface SemanticCheckDefinition {
   readonly name: string;
@@ -95,7 +102,7 @@ export interface DiagnosticPassDefinition {
 export interface MotifFacets {
   readonly motif: MotifName;
   readonly facets: readonly string[];
-  readonly status: "transcribed" | "todo_human_adjudication";
+  readonly status: RulebaseEntryStatus | "todo_human_adjudication";
   readonly provenance: string;
 }
 

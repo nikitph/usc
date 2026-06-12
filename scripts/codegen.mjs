@@ -253,9 +253,80 @@ function generatePydantic(entries) {
       ],
       { stdio: "inherit" },
     );
+    patchPydanticConditionals(entries);
   } finally {
     rmSync(stagingDir, { recursive: true, force: true });
   }
+}
+
+function patchPydanticConditionals(entries) {
+  for (const entry of entries) {
+    if (!Array.isArray(entry.schema.allOf) || entry.schema.allOf.length === 0) continue;
+    const conditionalChecks = emitPydanticConditionalChecks(entry.schema);
+    if (conditionalChecks.length === 0) continue;
+    const outputPath = join(PYDANTIC_OUT_DIR, `${entry.baseName.replaceAll("-", "_")}.py`);
+    const generated = readFileSync(outputPath, "utf8");
+    const withImport = generated.replace(
+      "from pydantic import ConfigDict, Field",
+      "from pydantic import ConfigDict, Field, model_validator",
+    );
+    const validatorMethod = [
+      "",
+      "    @model_validator(mode=\"after\")",
+      `    def validate_json_schema_conditionals(self) -> "${entry.schema.title}":`,
+      ...conditionalChecks,
+      "        return self",
+    ].join("\n");
+    writeFileSync(outputPath, `${withImport.trimEnd()}\n${validatorMethod}\n`);
+  }
+}
+
+function emitPydanticConditionalChecks(schema) {
+  return schema.allOf.flatMap((clause, index) => {
+    const clauseAt = `${schema.title}.allOf[${index}]`;
+    if (!clause.if?.properties || !clause.then) {
+      throw new CodegenError("only if/then conditionals are supported for Pydantic patching", clauseAt);
+    }
+    const guardParts = Object.entries(clause.if.properties).map(([fieldName, sub]) => {
+      if (sub.const === undefined) throw new CodegenError("if-conditions must be property const checks", clauseAt);
+      const enumName = pythonClassName(fieldName);
+      return `self.${fieldName} == ${enumName}.${pythonEnumMember(sub.const)}`;
+    });
+    const guard = guardParts.join(" and ");
+    const checks = [];
+    for (const requiredField of clause.then.required ?? []) {
+      checks.push(
+        `        if ${guard} and self.${requiredField} is None:`,
+        `            raise ValueError(${JSON.stringify(`${requiredField} is required when ${describePydanticGuard(clause.if.properties)}`)})`,
+      );
+    }
+    for (const [fieldName, sub] of Object.entries(clause.then.properties ?? {})) {
+      const allowed = Object.keys(sub).filter((key) => key !== "minItems");
+      if (allowed.length > 0) throw new CodegenError(`unsupported then-constraints [${allowed.join(", ")}]`, clauseAt);
+      checks.push(
+        `        if ${guard} and self.${fieldName} is not None and len(self.${fieldName}) < ${sub.minItems}:`,
+        `            raise ValueError(${JSON.stringify(`${fieldName} must contain at least ${sub.minItems} item(s) when ${describePydanticGuard(clause.if.properties)}`)})`,
+      );
+    }
+    return checks;
+  });
+}
+
+function pythonClassName(fieldName) {
+  return fieldName.slice(0, 1).toUpperCase() + fieldName.slice(1);
+}
+
+function pythonEnumMember(value) {
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) {
+    throw new CodegenError(`enum const ${JSON.stringify(value)} is not a Python identifier`, "pydantic conditionals");
+  }
+  return value;
+}
+
+function describePydanticGuard(properties) {
+  return Object.entries(properties)
+    .map(([fieldName, sub]) => `${fieldName} == ${JSON.stringify(sub.const)}`)
+    .join(" and ");
 }
 
 function rewriteRefs(node, moduleNameById, at) {

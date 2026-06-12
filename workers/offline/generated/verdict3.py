@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 
 from usc_models_base import UscFrozenModel
 
@@ -57,3 +57,11 @@ class Verdict3(UscFrozenModel):
     kernelVersion: str = Field(
         ..., description="rulebaseHash", pattern="^[a-f0-9]{16,64}$"
     )
+
+    @model_validator(mode="after")
+    def validate_json_schema_conditionals(self) -> "Verdict3":
+        if self.value == Value.unknown and self.gaps is None:
+            raise ValueError("gaps is required when value == \"unknown\"")
+        if self.value == Value.unknown and self.gaps is not None and len(self.gaps) < 1:
+            raise ValueError("gaps must contain at least 1 item(s) when value == \"unknown\"")
+        return self

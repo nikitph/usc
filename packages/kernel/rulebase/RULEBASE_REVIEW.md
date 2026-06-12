@@ -9,7 +9,15 @@ call that needs your adjudication.
 Verified mechanically: `loadRulebase()` validates all six files (motif names against the generated
 schema enum, obligation types/safe-defaults against the generated obligation schema, requires-DAG
 acyclicity, 6 hubs, full 32-motif coverage) and hashes deterministically.
-`rulebaseHash` at transcription time: `0f84c055bab28896d9bb1ced282f96462487c2d3324227af46d2fc3fe3a6d3e0`.
+`rulebaseHash` after the owner-approved drafting pass (2026-06-12):
+`6b5af89ede5faa19f19f90c356b5805092c9862ba69230e4a1ab4cbc22c52a4c`.
+
+**Update (2026-06-12, owner-approved drafting pass):** the owner judged the TODO-stub queue
+excessive process and approved agent drafting. 27 facet lists and 4 obligation rules (covering the
+3 unmapped event types) are now encoded with `status: "drafted"` — distinguishable from
+`transcribed` forever, so provenance stays honest while nothing blocks. Communication's facets
+turned out to be directly transcribable (paper §3.6.1: bandwidth, latency, fidelity, cost).
+Review now = reading the two data files' diffs; items 1–3 below are restated accordingly.
 
 ## What each file contains
 
@@ -24,20 +32,21 @@ acyclicity, 6 hubs, full 32-motif coverage) and hashes deterministically.
 
 ## Items requiring your adjudication
 
-1. **Facets: packet says "8 motifs in blueprint §7.1", blueprint spells out 4.**
-   §7.1 lists facets only for Feedback, Reconciliation, Invariant, Authority, then an ellipsis
-   ("full facet table maintained in the rulebase"). I transcribed those 4 and stubbed the other 28
-   as `todo_human_adjudication` rather than invent facet names. If 4 more were intended, name them.
+1. **Facets: 5 transcribed (Feedback, Reconciliation, Invariant, Authority from blueprint §7.1;
+   Communication from paper §3.6.1), 27 drafted.** Each drafted entry's provenance names the paper
+   section it was grounded in. Review = skim `facets.json`; rename/veto any facet list, flip
+   approved entries to `transcribed` (or a future `adjudicated` status) at your discretion.
+   Note: the packet said "8 motifs in §7.1" but the blueprint spells out only 4 — unresolved
+   discrepancy, now moot unless you meant 4 specific additional motifs.
 
-2. **Obligation rules: only 2 of 5 event types have sourced mappings.**
-   Sourced: `privileged_transition → authority` (blueprint §3.1 example rule) and
-   `state_destruction → evidence` (blueprint §6.3; trap-002 adjudication). The paper never maps
-   `external_commitment`, `scope_exit`, or `irreversible_effect` to obligation types.
-   *Unsourced candidates for your consideration (deliberately NOT encoded in the data):*
-   external_commitment → reconciliation; scope_exit → inherited_invariant;
-   irreversible_effect → evidence + freshness. Accept, amend, or leave TODO.
+2. **Obligation rules: all 5 event types now mapped — 2 transcribed + 4 drafted.**
+   Drafted: `external_commitment → reconciliation`, `scope_exit → inherited_invariant`,
+   `irreversible_effect → evidence` AND `irreversible_effect → freshness` (two rules, per
+   trap-001's expired-authority pattern). Each carries its rationale in `provenance`. All drafted
+   safe defaults are `pending` (INV-7-conservative); all are mandatory+blocking. These four lines
+   change gate verdicts — they are the highest-value review target in this file.
 
-3. **Safe defaults are sourced from trap fixtures, not the paper.**
+3. **Safe defaults for the two transcribed rules are sourced from trap fixtures, not the paper.**
    `authority → deny` (trap-001 expects deny on violated authority) and `evidence → pending`
    (trap-002 expects pending on budget exhaustion). The paper/blueprint state only that "allow"
    is never a safe default (INV-7). Confirm these two.

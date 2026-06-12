@@ -1,5 +1,5 @@
 {
-  "$comment": "Atlas rulebase v0 — obligation rules over ProcessIR event types (specs/kernel/SPEC.md §3; blueprint §6.3: rules fire only on IR-confirmed events, never surface keywords). Only 2 of the 5 event types have a sourced obligation mapping; the rest are TODO stubs awaiting human adjudication — candidate mappings are proposed in RULEBASE_REVIEW.md, deliberately NOT encoded here. PROTECTED PATH — NOT TRUSTED UNTIL HUMAN-REVIEWED.",
+  "$comment": "Atlas rulebase v0 — obligation rules over ProcessIR event types (specs/kernel/SPEC.md §3; blueprint §6.3: rules fire only on IR-confirmed events, never surface keywords). Status field is the provenance contract: 'transcribed' = sourced from paper/blueprint/adjudicated fixtures; 'drafted' = agent-drafted with owner approval (2026-06-12 session). PROTECTED PATH.",
   "eventTypes": ["privileged_transition", "state_destruction", "external_commitment", "scope_exit", "irreversible_effect"],
   "rules": [
     {
@@ -25,37 +25,48 @@
       "provenance": "blueprint §6.3 'a state_destruction event in the causal graph opens an evidence obligation'; fixtures/trap_set/trap-002 adjudication; safeDefault per trap-002 (unfetchable evidence ⇒ pending, gap budget_exhausted)"
     },
     {
-      "id": "todo_external_commitment",
+      "id": "reconciliation_on_external_commitment",
       "eventType": "external_commitment",
-      "opens": null,
-      "dischargedBy": null,
-      "mandatory": null,
-      "blocking": null,
-      "safeDefault": null,
-      "status": "todo_human_adjudication",
-      "provenance": "No sourced mapping in paper or blueprint. Candidate proposed in RULEBASE_REVIEW.md."
+      "opens": "reconciliation",
+      "dischargedBy": "external_state_reconciled",
+      "mandatory": true,
+      "blocking": true,
+      "safeDefault": "pending",
+      "status": "drafted",
+      "provenance": "drafted (owner-approved 2026-06-12). Rationale: a commitment made to an external party creates two states that must agree — what was promised and what internally holds (paper §3.6.3: divergent states that should agree resolve via Reconciliation). Until the external and internal records reconcile, closure is unlicensed; unresolvable ⇒ pending (INV-7)."
     },
     {
-      "id": "todo_scope_exit",
+      "id": "inherited_invariant_on_scope_exit",
       "eventType": "scope_exit",
-      "opens": null,
-      "dischargedBy": null,
-      "mandatory": null,
-      "blocking": null,
-      "safeDefault": null,
-      "status": "todo_human_adjudication",
-      "provenance": "No sourced mapping in paper or blueprint. Candidate proposed in RULEBASE_REVIEW.md."
+      "opens": "inherited_invariant",
+      "dischargedBy": "inherited_invariants_revalidated",
+      "mandatory": true,
+      "blocking": true,
+      "safeDefault": "pending",
+      "status": "drafted",
+      "provenance": "drafted (owner-approved 2026-06-12). Rationale: leaving a Boundary scope is the moment parent-scope Invariants must hold again (paper §8.3: Authority edges carry inherited invariants; a child cannot override them). Exit without revalidation is how locally-valid work breaks global constraints; unverifiable ⇒ pending."
     },
     {
-      "id": "todo_irreversible_effect",
+      "id": "evidence_on_irreversible_effect",
       "eventType": "irreversible_effect",
-      "opens": null,
-      "dischargedBy": null,
-      "mandatory": null,
-      "blocking": null,
-      "safeDefault": null,
-      "status": "todo_human_adjudication",
-      "provenance": "No sourced mapping in paper or blueprint. Candidate proposed in RULEBASE_REVIEW.md."
+      "opens": "evidence",
+      "dischargedBy": "required_evidence_resolved",
+      "mandatory": true,
+      "blocking": true,
+      "safeDefault": "pending",
+      "status": "drafted",
+      "provenance": "drafted (owner-approved 2026-06-12). Rationale: an effect that cannot be undone demands the supporting evidence exist BEFORE the act, by analogy with the sourced state_destruction rule (blueprint §6.3) — irreversibility is the property that makes missing evidence unrecoverable."
+    },
+    {
+      "id": "freshness_on_irreversible_effect",
+      "eventType": "irreversible_effect",
+      "opens": "freshness",
+      "dischargedBy": "evidence_within_validity_window",
+      "mandatory": true,
+      "blocking": true,
+      "safeDefault": "pending",
+      "status": "drafted",
+      "provenance": "drafted (owner-approved 2026-06-12). Rationale: evidence supporting an irreversible act must be valid AT execution time, not merely have existed (trap-001's adjudication: approval expired before execution — stale authority is the trap). EvidenceRef.validUntil (decay-as-TTL) is the mechanism; expired-or-unknown freshness ⇒ pending."
     }
   ],
   "terminalClaimObligationTypes": {

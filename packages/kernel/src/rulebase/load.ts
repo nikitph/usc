@@ -230,7 +230,7 @@ function validateObligationRules(raw: typeof obligationRulesJson): {
     seenIds.add(rule.id);
     if (!EVENT_TYPES.has(rule.eventType)) fail(file, `rule "${rule.id}": unknown eventType "${rule.eventType}"`);
     coveredEventTypes.add(rule.eventType);
-    if (rule.status === "transcribed") {
+    if (rule.status === "transcribed" || rule.status === "drafted") {
       if (typeof rule.opens !== "string" || !OBLIGATION_TYPES.has(rule.opens)) {
         fail(file, `rule "${rule.id}": opens ${JSON.stringify(rule.opens)} is not an obligation type from schemas/obligation.schema.json`);
       }
@@ -300,9 +300,9 @@ function validateFacets(raw: typeof facetsJson): Rulebase["facets"] {
     const motif = requireMotifName(file, entry.motif, "facet entry");
     if (seenMotifs.has(motif)) conflict(file, `duplicate facet entry for "${motif}"`);
     seenMotifs.add(motif);
-    if (entry.status === "transcribed") {
+    if (entry.status === "transcribed" || entry.status === "drafted") {
       if (entry.facets.length < 3 || entry.facets.length > 5) {
-        fail(file, `"${motif}": transcribed facet lists must have 3–5 entries (blueprint §7.1), found ${entry.facets.length}`);
+        fail(file, `"${motif}": facet lists must have 3–5 entries (blueprint §7.1), found ${entry.facets.length}`);
       }
       for (const facet of entry.facets) requireNonEmptyString(file, facet, `"${motif}" facet`);
     } else if (entry.status === "todo_human_adjudication") {

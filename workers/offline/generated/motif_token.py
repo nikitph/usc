@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 
 from usc_models_base import UscFrozenModel
 
@@ -81,3 +81,9 @@ class MotifToken(UscFrozenModel):
     )
     domainTerm: str = Field(..., min_length=1)
     extractorVersion: str = Field(..., min_length=1)
+
+    @model_validator(mode="after")
+    def validate_json_schema_conditionals(self) -> "MotifToken":
+        if self.motif == Motif.boundary and self.boundaryRole is None:
+            raise ValueError("boundaryRole is required when motif == \"boundary\"")
+        return self
