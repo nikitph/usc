@@ -1,0 +1,19 @@
+{
+  "$comment": "Atlas rulebase v0 — collision registry. Transcribed by packet K-03 from paper §4.4 (titled 'Collision registry examples' — the paper presents these as examples, so this registry is presumptively incomplete; see RULEBASE_REVIEW.md). PROTECTED PATH — NOT TRUSTED UNTIL HUMAN-REVIEWED.",
+  "collisions": [
+    {
+      "name": "halting",
+      "motifs": ["prediction", "self_reference", "terminal_state"],
+      "structuralImpossibility": "A system must predict its own termination; the halting problem appears.",
+      "qualifier": null,
+      "provenance": "paper §4.4 collision registry; blueprint §3.1 'collision(halting, [prediction, self_reference, terminal_state])'"
+    },
+    {
+      "name": "godelian_incompleteness",
+      "motifs": ["self_reference", "invariant"],
+      "structuralImpossibility": "A system attempts to fully prove its own consistency; Gödelian incompleteness appears.",
+      "qualifier": "Applies to COMPLETE self-reference combined with invariant (paper wording: 'Complete Self-Reference ⊗ Invariant'). The completeness qualifier is data the detector must respect — partial self-reference with invariants is not a collision.",
+      "provenance": "paper §4.4 collision registry"
+    }
+  ]
+}

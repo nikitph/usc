@@ -1,0 +1,16 @@
+{
+  "$comment": "Atlas rulebase v0 — semantic checks and diagnostic passes. Transcribed by packet K-03 from paper Table 4 + §8.4–8.5; provenance_check from specs/kernel/SPEC.md §4 (INV-6's single implementation point). Paper Table 4's 'Three-valued verdicts' row is the verdict space itself (INV-1), not a check, so it is not listed here. PROTECTED PATH — NOT TRUSTED UNTIL HUMAN-REVIEWED.",
+  "semanticChecks": [
+    { "name": "composition_completeness", "question": "Are every claimed composite's prerequisites present in the scope chain?", "provenance": "paper Table 4, §8.4; specs/kernel/SPEC.md §4.1" },
+    { "name": "invariant_propagation", "question": "Do child Transitions respect inherited parent Invariants?", "provenance": "paper Table 4, §8.4 (a child can add stricter local Invariants but cannot override inherited ones, §8.3); specs/kernel/SPEC.md §4.2" },
+    { "name": "fep_viability", "question": "Does each autonomous node have State, Boundary, Transition, and Feedback?", "requiredMotifs": ["state", "boundary", "transition", "feedback"], "provenance": "paper Table 4, §5 (viability manifold), §8.4; specs/kernel/SPEC.md §4.3; blueprint §3.3" },
+    { "name": "collision_detection", "question": "Does the AST contain structurally impossible motif combinations?", "provenance": "paper Table 4, §4.4, §8.4; specs/kernel/SPEC.md §4.4" },
+    { "name": "terminal_validity", "question": "Has each Terminal State discharged mandatory Authority, Reconciliation, evidence, freshness, and inherited-Invariant obligations?", "provenance": "paper Table 4, §3.1.6, §8.4; specs/kernel/SPEC.md §4.5 (Kleene-AND over mandatory blocking obligations)" },
+    { "name": "provenance_check", "question": "In production mode, does the artifact's derivation DAG contain an experimental-tagged ancestor (invalid if so; research mode returns valid with an advisory)?", "provenance": "specs/kernel/SPEC.md §4 'Plus: provenance_check(artifactDag, mode)'; CLAUDE.md INV-6" }
+  ],
+  "diagnosticPasses": [
+    { "name": "diagnostic_absence", "question": "Which missing motifs predict specific failure modes?", "provenance": "paper Table 4, §8.5" },
+    { "name": "architectural_impoverishment", "question": "Which present motifs are weak compared to rich cross-domain implementations?", "provenance": "paper Table 4, §8.5" },
+    { "name": "multi_symptom_collapse", "question": "Do multiple observed problems share one structural cause?", "provenance": "paper Table 4, §8.5" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "$comment": "Atlas rulebase v0 — composition grammar (requires edges + emergent composites). Transcribed by packet K-03 from the paper's per-motif 'Composition:' lines (§3), §4.1, and Table 3. Motifs with no entry are primitive (no structural prerequisites stated in the paper). PROTECTED PATH — NOT TRUSTED UNTIL HUMAN-REVIEWED.",
+  "requires": [
+    { "motif": "prediction", "prerequisites": ["representation", "feedback"], "provenance": "paper §3.3.3 'Composition: Representation (12) ⊗ Feedback (13)'; §4.1; blueprint §3.1 example facts" },
+    { "motif": "model", "prerequisites": ["representation", "prediction", "boundary"], "provenance": "paper §3.3.5 'Composition: Representation (12) ⊗ Prediction (14) ⊗ Boundary (5)'" },
+    { "motif": "compression", "prerequisites": ["representation", "scarcity"], "provenance": "paper §3.3.6 'Composition: Representation (12) ⊗ Scarcity (26)'" },
+    { "motif": "optimization", "prerequisites": ["prediction", "search", "scarcity"], "provenance": "paper §3.3.7 'Composition: Prediction (14) ⊗ Search (15) ⊗ Scarcity (26)'; §4.1" },
+    { "motif": "hierarchy", "prerequisites": ["composition", "authority"], "provenance": "paper §3.4.2 'Composition: Composition (21) ⊗ Authority (30)'" },
+    { "motif": "modularity", "prerequisites": ["boundary", "composition"], "provenance": "paper §3.4.3 'Composition: Boundary (5) ⊗ Composition (21)'" },
+    { "motif": "abstraction", "prerequisites": ["boundary", "representation"], "provenance": "paper §3.4.4 'Composition: Boundary (5) ⊗ Representation (12)'" },
+    { "motif": "emergence", "prerequisites": ["composition", "feedback"], "provenance": "paper §3.4.5 'Composition: Composition (21) ⊗ Feedback (13)'" },
+    { "motif": "queue", "prerequisites": ["scarcity", "composition"], "provenance": "paper §3.5.2 'Composition: Scarcity (26) ⊗ Composition (21)'" },
+    { "motif": "scheduling", "prerequisites": ["queue", "authority"], "provenance": "paper §3.5.3 'Composition: Queue (27) ⊗ Authority (30)'" },
+    { "motif": "reconciliation", "prerequisites": ["communication", "invariant", "authority"], "provenance": "paper §3.6.3 'Composition: Communication (29) ⊗ Invariant (3) ⊗ Authority (30)'; §4.1; blueprint §3.1 example facts" },
+    { "motif": "negotiation", "prerequisites": ["communication", "scarcity", "authority"], "provenance": "paper §3.6.4 'Composition: Communication (29) ⊗ Scarcity (26) ⊗ Authority (30)'" }
+  ],
+  "emergentComposites": [
+    { "name": "accountability", "recipe": ["feedback", "authority"], "structuralMeaning": "Someone must answer for outcomes.", "provenance": "paper Table 3, §4.2" },
+    { "name": "trust", "recipe": ["identity", "communication"], "structuralMeaning": "The receiver can verify and rely on the sender.", "provenance": "paper Table 3, §4.2" },
+    { "name": "rule_of_law", "recipe": ["invariant", "authority"], "structuralMeaning": "Authorities themselves are bound by rules.", "provenance": "paper Table 3, §4.2" },
+    { "name": "corruption", "recipe": ["decay", "invariant"], "structuralMeaning": "Rules stop being enforced as maintenance fails.", "provenance": "paper Table 3, §4.2" },
+    { "name": "runaway", "recipe": ["decay", "self_reference"], "structuralMeaning": "Self-reinforcing degradation escapes all control.", "provenance": "paper Table 3, §4.2" }
+  ]
+}
