@@ -26,6 +26,14 @@ Human adjudication needed:
 2. Provide the four missing motif facet lists and their source, then update
    `packages/kernel/rulebase/facets.json` in a protected-path-reviewed change.
 
+**RESOLVED (2026-06-12, owner adjudication in-session):** the owner chose a third
+path — agent-drafted facet lists with permanent provenance distinction
+(`status: "drafted"` vs `"transcribed"` in the data). Encoded in commit
+`5cbd33e`: 27 drafted facet lists + 4 drafted obligation rules; Communication's
+facets proved directly transcribable from paper §3.6.1. The "8 motifs" packet
+wording remains unexplained but is moot unless the owner names 4 specific
+additional motifs that were intended.
+
 ## Verification gate note
 
 `make verify` also cannot be green at the K-03 boundary without starting later
