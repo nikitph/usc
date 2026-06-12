@@ -8,7 +8,10 @@ import {
   applyAstOperations,
   buildProcessIrLite,
   classifyEventText,
+  ComplianceChecklistEmitter,
   createGraftPlanBody,
+  createCodegenEmitterRegistry,
+  EngineeringSpecEmitter,
   graftPlanArtifact,
   materializeObligationLedger,
   obligationLedgerToFacts,
@@ -219,6 +222,34 @@ test("should_create_recommendation_artifact_with_rank_and_warnings", () => {
   assert.equal(artifact.body["emitterReady"], false);
 });
 
+test("should_emit_engineering_spec_artifact_with_recommendation_provenance", () => {
+  const registry = createCodegenEmitterRegistry();
+  registry.register(new EngineeringSpecEmitter());
+  const artifact = registry.get("engineering_spec").emit(emitterInput());
+
+  assert.equal(artifact.kind, "recommendation");
+  assert.deepEqual(artifact.parents, ["d".repeat(64)]);
+  assert.equal(artifact.body["target"], "engineering_spec");
+  assert.equal(artifact.body["autoApplied"], false);
+  assert.match(String(artifact.body["content"]), /Acceptance Checks/);
+});
+
+test("should_emit_compliance_checklist_with_anti_pattern_warnings", () => {
+  const registry = createCodegenEmitterRegistry();
+  registry.register(new ComplianceChecklistEmitter());
+  const artifact = registry.get("compliance_checklist").emit(emitterInput());
+
+  assert.equal(artifact.body["target"], "compliance_checklist");
+  assert.match(String(artifact.body["content"]), /near anti-pattern/);
+});
+
+test("should_reject_duplicate_codegen_emitter_registration", () => {
+  const registry = createCodegenEmitterRegistry();
+  registry.register(new EngineeringSpecEmitter());
+
+  assert.throws(() => registry.register(new EngineeringSpecEmitter()), RuntimeError);
+});
+
 function token(
   id: string,
   motif: MotifName,
@@ -258,5 +289,16 @@ function runtimeAst(): RuntimeAstNode {
     claims: ["boundary"],
     sourceTokenIds: ["boundary-token"],
     children: [],
+  };
+}
+
+function emitterInput() {
+  return {
+    recommendationArtifactId: "d".repeat(64),
+    recommendationTitle: "Add bounded feedback authority",
+    collapsedSymptoms: ["missing_feedback", "terminal_overclaim"],
+    antiPatternWarnings: ["near anti-pattern: stale authority close"],
+    rulebaseHash: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    createdAt: "2026-06-13T00:00:00.000Z",
   };
 }

@@ -8,6 +8,11 @@ export {
   resolveLedgerWithEvidence,
 } from "./evidence-sources.ts";
 export {
+  ComplianceChecklistEmitter,
+  EngineeringSpecEmitter,
+  createCodegenEmitterRegistry,
+} from "./emitters.ts";
+export {
   KeywordExtractionBackend,
   TerminalClaimKeywordDetector,
   createExtractionRegistry,
@@ -60,6 +65,12 @@ export type {
   RawExtraction,
   TerminalClaimDetector,
 } from "./types.ts";
+export type {
+  CodegenEmitter,
+  CodegenEmitterInput,
+  CodegenEmitterRegistry,
+  CodegenEmitterTarget,
+} from "./emitters.ts";
 export type {
   AstModificationOperation,
   GraftPlanArtifactInput,

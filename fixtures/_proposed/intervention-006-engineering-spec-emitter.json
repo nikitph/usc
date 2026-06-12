@@ -1,0 +1,14 @@
+{
+  "id": "intervention-006-engineering-spec-emitter",
+  "subsystem": "intervention",
+  "name": "engineering-spec-emitter",
+  "rationale": "M4-04 draft fixture: the engineering spec emitter produces a markdown recommendation artifact parented to the recommendation artifact, with auto-application disabled.",
+  "operation": "emit engineering spec from ranked recommendation",
+  "expect": {
+    "target": "engineering_spec",
+    "format": "markdown",
+    "contains": ["Engineering Intent", "Acceptance Checks"],
+    "autoApplied": false
+  },
+  "humanAdjudication": "proposed"
+}

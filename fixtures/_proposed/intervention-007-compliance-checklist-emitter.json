@@ -1,0 +1,14 @@
+{
+  "id": "intervention-007-compliance-checklist-emitter",
+  "subsystem": "intervention",
+  "name": "compliance-checklist-emitter",
+  "rationale": "M4-04 draft fixture: the compliance checklist emitter preserves anti-pattern warnings in a markdown artifact for reviewer approval.",
+  "operation": "emit compliance checklist from ranked recommendation",
+  "expect": {
+    "target": "compliance_checklist",
+    "format": "markdown",
+    "contains": ["Required Review", "Anti-pattern Warnings"],
+    "autoApplied": false
+  },
+  "humanAdjudication": "proposed"
+}
