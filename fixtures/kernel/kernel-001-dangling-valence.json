@@ -1,0 +1,16 @@
+{
+  "runner": "kernel",
+  "name": "reconciliation claimed without authority in scope chain",
+  "facts": [
+    {"fact": "node", "args": ["n1"]},
+    {"fact": "claims", "args": ["n1", "reconciliation"]},
+    {"fact": "provided_in_scope_chain", "args": ["n1", "communication"]},
+    {"fact": "provided_in_scope_chain", "args": ["n1", "invariant"]}
+  ],
+  "expect": {
+    "check": "composition_completeness",
+    "nodeOrClaim": "n1",
+    "value": "invalid",
+    "bindingsInclude": {"missingPrereq": "authority"}
+  }
+}

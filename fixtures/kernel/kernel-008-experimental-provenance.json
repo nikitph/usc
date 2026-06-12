@@ -1,0 +1,12 @@
+{
+  "runner": "kernel",
+  "name": "production-mode provenance check rejects DAG containing experimental extraction",
+  "facts": [
+    {"fact": "artifact", "args": ["a_verdict", "verdict"]},
+    {"fact": "parent", "args": ["a_verdict", "a_ast"]},
+    {"fact": "parent", "args": ["a_ast", "a_tokens"]},
+    {"fact": "tagged", "args": ["a_tokens", "experimental"]}
+  ],
+  "mode": "production",
+  "expect": {"check": "provenance_check", "nodeOrClaim": "a_verdict", "value": "invalid", "bindingsInclude": {"experimentalAncestor": "a_tokens"}}
+}

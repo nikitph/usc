@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "usc://schemas/motif-token",
+  "title": "MotifToken",
+  "description": "INV-5: span is mandatory. Tokens without evidence do not exist.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "motif", "evidence", "confidence", "role", "domainTerm", "extractorVersion"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "motif": {
+      "enum": ["state","transition","invariant","identity","boundary","terminal_state","decay",
+               "storage","addressing","replication","synchronization",
+               "representation","feedback","prediction","search","model","compression","optimization","explore_exploit","self_reference",
+               "composition","hierarchy","modularity","abstraction","emergence",
+               "scarcity","queue","scheduling",
+               "communication","authority","reconciliation","negotiation"]
+    },
+    "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "usc://schemas/evidence-ref" } },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "role": { "enum": ["explicit", "implicit", "inferred", "candidate"] },
+    "boundaryRole": { "enum": ["scope_delimiter", "concept_reference"], "description": "required iff motif=boundary" },
+    "domainTerm": { "type": "string", "minLength": 1 },
+    "extractorVersion": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    { "if": { "properties": { "motif": { "const": "boundary" } } }, "then": { "required": ["boundaryRole"] } }
+  ]
+}

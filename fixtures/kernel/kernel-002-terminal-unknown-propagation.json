@@ -1,0 +1,15 @@
+{
+  "runner": "kernel",
+  "name": "terminal claim with one satisfied + one unknown mandatory obligation is unknown, not valid",
+  "facts": [
+    {"fact": "terminal_claim", "args": ["t1", "n1"]},
+    {"fact": "obligation", "args": ["o1", "t1", "authority", "mandatory", "blocking", "satisfied"]},
+    {"fact": "obligation", "args": ["o2", "t1", "freshness", "mandatory", "blocking", "unknown"]}
+  ],
+  "expect": {
+    "check": "terminal_validity",
+    "nodeOrClaim": "t1",
+    "value": "unknown",
+    "gapKinds": ["stale_evidence"]
+  }
+}

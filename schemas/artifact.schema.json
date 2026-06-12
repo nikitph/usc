@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "usc://schemas/artifact",
+  "title": "Artifact",
+  "description": "Envelope for every node in the content-addressed store. INV-3/INV-4. id = sha256(canonicalJson({kind, body, rulebaseHash, parents})).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "kind", "body", "rulebaseHash", "parents", "tags", "createdAt"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "kind": { "enum": ["source","chunk","token_stream","ast","motif_vector","process_ir","obligation_ledger","verdict","pattern","anti_pattern","graft_plan","recommendation","feedback_event","transfer_evaluation","extraction_failure","benchmark_run"] },
+    "body": { "type": "object" },
+    "rulebaseHash": { "type": "string", "pattern": "^[a-f0-9]{16,64}$" },
+    "parents": { "type": "array", "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+    "extractorVersion": { "type": "string", "description": "required for any LLM-derived kind; enforced in store SPEC" },
+    "tags": {
+      "type": "array",
+      "items": { "enum": ["experimental", "stale_kernel", "superseded", "golden"] },
+      "description": "Mutable metadata; the ONLY mutable surface of an artifact (INV-3 exception list)."
+    },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}

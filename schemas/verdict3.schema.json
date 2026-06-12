@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "usc://schemas/verdict3",
+  "title": "Verdict3",
+  "description": "Three-valued structural verdict with mandatory provenance. INV-1: 'unknown' must carry gaps; consumers must never coerce it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["value", "rule", "bindings", "evidence", "kernelVersion"],
+  "properties": {
+    "value": { "enum": ["valid", "invalid", "unknown"] },
+    "rule": { "type": "string", "minLength": 1, "description": "RuleId in the rulebase that produced this verdict" },
+    "bindings": { "type": "object", "additionalProperties": { "type": "string" } },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "usc://schemas/evidence-ref" }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "description"],
+        "properties": {
+          "kind": { "enum": ["missing_evidence", "stale_evidence", "contradictory_evidence", "budget_exhausted", "below_extraction_bar"] },
+          "description": { "type": "string" },
+          "obligationId": { "type": "string" }
+        }
+      },
+      "description": "Required (minItems 1) when value is 'unknown'."
+    },
+    "kernelVersion": { "type": "string", "pattern": "^[a-f0-9]{16,64}$", "description": "rulebaseHash" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "value": { "const": "unknown" } } },
+      "then": { "required": ["gaps"], "properties": { "gaps": { "minItems": 1 } } }
+    }
+  ]
+}

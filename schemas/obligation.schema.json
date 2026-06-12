@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "usc://schemas/obligation",
+  "title": "MotifObligation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "caseId", "type", "mandatory", "blocking", "status", "triggeredBy", "safeDefault", "rationale"],
+  "properties": {
+    "id": { "type": "string" },
+    "caseId": { "type": "string" },
+    "type": { "enum": ["authority", "reconciliation", "evidence", "freshness", "inherited_invariant"] },
+    "mandatory": { "type": "boolean" },
+    "blocking": { "type": "boolean" },
+    "status": { "enum": ["satisfied", "violated", "unknown"] },
+    "triggeredBy": { "type": "array", "minItems": 1, "items": { "type": "string" }, "description": "ProcessIR event ids (IR-confirmed, never raw keywords — INV per blueprint §6.3)" },
+    "resolvedBy": { "type": "array", "items": { "type": "string" } },
+    "requiredEvidence": { "type": "array", "items": { "type": "string" } },
+    "safeDefault": { "enum": ["deny", "pending", "manual_review", "retry", "hold"], "description": "'allow' is intentionally not in this enum (INV-7)" },
+    "rationale": { "type": "string", "minLength": 1 }
+  }
+}

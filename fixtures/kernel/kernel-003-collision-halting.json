@@ -1,0 +1,11 @@
+{
+  "runner": "kernel",
+  "name": "prediction + self_reference + terminal_state on one node collides (halting)",
+  "facts": [
+    {"fact": "node", "args": ["n1"]},
+    {"fact": "claims", "args": ["n1", "prediction"]},
+    {"fact": "claims", "args": ["n1", "self_reference"]},
+    {"fact": "claims", "args": ["n1", "terminal_state"]}
+  ],
+  "expect": {"check": "collision_detection", "nodeOrClaim": "n1", "value": "invalid", "bindingsInclude": {"collision": "halting"}}
+}
