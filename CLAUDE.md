@@ -53,7 +53,11 @@ another subsystem, stop and flag.
 2. State your plan in ≤10 lines as a comment in the PR/commit description BEFORE coding.
 3. Implement. Small commits, conventional messages (`feat:`, `fix:`, `refactor:`).
 4. Run `make verify` locally. The packet is done ONLY when verify is green AND the
-   packet's listed fixtures pass.
+   packet's listed fixtures pass. *Bootstrap exception (owner-adjudicated 2026-06-12,
+   see packets/mvp0/K-03-BLOCKED.md): until packet K-06 lands the fixture runner,
+   "verify green" means the packet's stated Exit criteria plus every verify target
+   already implemented (typecheck, schemas, properties, lint, protected). Never
+   stub a verify target to make it pass.*
 5. Self-review against §1 invariants and the STANDARDS.md checklist. List in the commit
    description any invariant you came close to violating and how you avoided it.
 6. If you could not satisfy a fixture without changing it: STOP. Write a
