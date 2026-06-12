@@ -1,0 +1,97 @@
+{
+  "traceId": "local-agent-trace-m1",
+  "mode": "research",
+  "request": {
+    "agentId": "codex-local",
+    "action": {
+      "name": "report_completion",
+      "target": "mvp1-action-gate-slice",
+      "declaredGoal": "summarize implementation progress through M1-05"
+    },
+    "context": [
+      {
+        "text": "738693c feat: M1-01 artifact store foundation",
+        "ts": "2026-06-13T01:00:00Z"
+      },
+      {
+        "text": "ad0d575 feat: M1-02 runtime core",
+        "ts": "2026-06-13T01:20:00Z"
+      },
+      {
+        "text": "556f279 feat: M1-03 runtime extraction doubles",
+        "ts": "2026-06-13T01:40:00Z"
+      },
+      {
+        "text": "a146c06 feat: M1-04 action gate API",
+        "ts": "2026-06-13T02:00:00Z"
+      },
+      {
+        "text": "49d9d89 feat: M1-05 gate dashboard UI",
+        "ts": "2026-06-13T02:20:00Z"
+      }
+    ]
+  },
+  "response": {
+    "correlationId": "corr_6c24adc1be5e6669",
+    "verdict": "allow",
+    "terminalValidity": "valid",
+    "verdictArtifactId": "aad00e170d69487ae3b77f4833db01a488d811fa69e688e47a763bb46ec0ac18",
+    "mode": "research",
+    "actionHash": "6c24adc1be5e666973be625bdf8690d90f6dbe9a8f1805fb04f2dbf70648b76a",
+    "rationale": [
+      "terminal_validity=valid",
+      "verdict=allow"
+    ],
+    "gaps": []
+  },
+  "derivationDag": [
+    {
+      "id": "aad00e170d69487ae3b77f4833db01a488d811fa69e688e47a763bb46ec0ac18",
+      "kind": "verdict",
+      "parents": [
+        "9aa1be8d3998e17e5d40fb3a60a36f767b6ad6f7818ca50534943f5f2ca5854e"
+      ],
+      "tags": [
+        "experimental"
+      ]
+    },
+    {
+      "id": "9aa1be8d3998e17e5d40fb3a60a36f767b6ad6f7818ca50534943f5f2ca5854e",
+      "kind": "token_stream",
+      "parents": [
+        "c0633e2f788f4bc243880694ec88d5059c03986ca557d848271ac65227fff970"
+      ],
+      "tags": [
+        "experimental"
+      ],
+      "extractorVersion": "keyword-test-double-v1"
+    },
+    {
+      "id": "c0633e2f788f4bc243880694ec88d5059c03986ca557d848271ac65227fff970",
+      "kind": "source",
+      "parents": [
+        "e1ea5b8914f2165c85cfc3558f80fd2aedb56f77e731a76afeacfd8f86b39402"
+      ],
+      "tags": [
+        "experimental"
+      ],
+      "extractorVersion": "keyword-test-double-v1"
+    },
+    {
+      "id": "e1ea5b8914f2165c85cfc3558f80fd2aedb56f77e731a76afeacfd8f86b39402",
+      "kind": "source",
+      "parents": [],
+      "tags": [
+        "experimental"
+      ]
+    }
+  ],
+  "experimentalArtifactIds": [
+    "9aa1be8d3998e17e5d40fb3a60a36f767b6ad6f7818ca50534943f5f2ca5854e",
+    "aad00e170d69487ae3b77f4833db01a488d811fa69e688e47a763bb46ec0ac18",
+    "c0633e2f788f4bc243880694ec88d5059c03986ca557d848271ac65227fff970",
+    "e1ea5b8914f2165c85cfc3558f80fd2aedb56f77e731a76afeacfd8f86b39402"
+  ],
+  "productionWouldBeInvalid": true,
+  "adjudicationStatus": "proposed"
+}

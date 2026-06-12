@@ -1,0 +1,15 @@
+{
+  "id": "runtime-007-real-agent-trace-research-smoke",
+  "subsystem": "runtime",
+  "name": "real-agent-trace-research-mode-smoke",
+  "rationale": "M1-06 draft fixture: a local Codex implementation trace runs through the action gate in research mode, stores a full derivation DAG, and proves production-mode consumption would be invalid while extraction artifacts remain experimental.",
+  "operation": "runResearchTraceSmoke(localAgentTraceRequest)",
+  "expect": {
+    "mode": "research",
+    "verdictArtifactInDag": true,
+    "hasTokenStreamAncestor": true,
+    "experimentalArtifactCountAtLeast": 1,
+    "productionWouldBeInvalid": true
+  },
+  "humanAdjudication": "proposed"
+}
