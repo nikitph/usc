@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@usc/kernel": "workspace:*",
-    "@usc/shared": "workspace:*"
+    "@usc/shared": "workspace:*",
+    "@usc/store": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",

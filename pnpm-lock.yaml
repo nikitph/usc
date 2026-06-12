@@ -48,6 +48,9 @@ importers:
       '@usc/shared':
         specifier: workspace:*
         version: link:../shared
+      '@usc/store':
+        specifier: workspace:*
+        version: link:../store
     devDependencies:
       '@types/node':
         specifier: ^22.15.0

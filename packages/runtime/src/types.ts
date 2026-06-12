@@ -1,5 +1,6 @@
 import type { Fact, MotifAstNode, MotifName, ProcessIrEventType } from "@usc/kernel";
 import type { MotifObligation, MotifToken } from "@usc/shared/generated";
+import type { ArtifactEnvelope, ArtifactId, ArtifactRepository } from "@usc/store";
 
 export type RuntimeEventType = ProcessIrEventType | "observation";
 
@@ -51,4 +52,60 @@ export interface TokenWithSpan {
   readonly end: number;
 }
 
-export type { Fact, MotifName, MotifObligation, MotifToken, ProcessIrEventType };
+export interface RawExtraction {
+  readonly rawText: string;
+  readonly tokens: readonly unknown[];
+}
+
+export interface ExtractionInput {
+  readonly sourceText: string;
+  readonly sourceArtifactId: ArtifactId;
+  readonly sampleIndex: number;
+}
+
+export interface ExtractionBackend {
+  readonly name: string;
+  readonly extractorVersion: string;
+  extract(input: ExtractionInput): Promise<RawExtraction>;
+}
+
+export interface ExtractionRegistry {
+  register(backend: ExtractionBackend): void;
+  get(name: string): ExtractionBackend;
+}
+
+export interface LexerRunRequest {
+  readonly repository: ArtifactRepository;
+  readonly backendName: string;
+  readonly registry: ExtractionRegistry;
+  readonly sourceText: string;
+  readonly sourceArtifactId: ArtifactId;
+  readonly rulebaseHash: string;
+  readonly sampleCount: number;
+  readonly createdAt: string;
+  readonly createdBy: string;
+}
+
+export interface LexerRunResult {
+  readonly rawOutputArtifacts: readonly ArtifactEnvelope[];
+  readonly extractionFailures: readonly ArtifactEnvelope[];
+  readonly tokenStreamArtifact: ArtifactEnvelope;
+  readonly tokens: readonly MotifToken[];
+}
+
+export interface CandidateTerminalClaim {
+  readonly id: string;
+  readonly text: string;
+  readonly sourceArtifactId: ArtifactId;
+  readonly span: {
+    readonly start: number;
+    readonly end: number;
+  };
+}
+
+export interface TerminalClaimDetector {
+  readonly name: string;
+  detect(sourceText: string, sourceArtifactId: ArtifactId): readonly CandidateTerminalClaim[];
+}
+
+export type { ArtifactEnvelope, ArtifactId, ArtifactRepository, Fact, MotifName, MotifObligation, MotifToken, ProcessIrEventType };

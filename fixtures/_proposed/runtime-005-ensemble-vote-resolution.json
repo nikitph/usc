@@ -1,0 +1,13 @@
+{
+  "id": "runtime-005-ensemble-vote-resolution",
+  "subsystem": "runtime",
+  "name": "ensemble-vote-resolution",
+  "rationale": "M1-03 draft fixture: tokens cluster by motif plus overlapping span; clusters with votes in a majority of samples remain explicit, while minority clusters are demoted to candidate with discounted confidence.",
+  "operation": "run lexer with three deterministic samples: two overlapping feedback tokens and one authority token",
+  "expect": {
+    "feedback.role": "explicit",
+    "authority.role": "candidate",
+    "authority.confidenceMultiplier": 0.5
+  },
+  "humanAdjudication": "proposed"
+}

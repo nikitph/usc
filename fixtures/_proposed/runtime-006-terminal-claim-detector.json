@@ -1,0 +1,12 @@
+{
+  "id": "runtime-006-terminal-claim-detector",
+  "subsystem": "runtime",
+  "name": "terminal-claim-detector-test-double",
+  "rationale": "M1-03 draft fixture: the deterministic terminal-claim detector is recall-oriented and emits candidate claims with source spans; IR confirmation remains a later stage.",
+  "operation": "detect terminal-claim keywords in trace text",
+  "expect": {
+    "claims": ["done", "approved"],
+    "spanGrounded": true
+  },
+  "humanAdjudication": "proposed"
+}
