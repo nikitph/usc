@@ -1,0 +1,13 @@
+{
+  "id": "runtime-011-fixpoint-ttl-decay",
+  "subsystem": "runtime",
+  "name": "fixpoint-ttl-decay",
+  "rationale": "M2-02 draft fixture: validity windows are evaluated with an injected clock; expired base evidence retracts and propagates to derived authority facts.",
+  "operation": "assert approval validUntil 2026-06-13T01:00:00Z, derive authority, expire at 2026-06-13T02:00:00Z",
+  "expect": {
+    "expiredFactIds": ["approval:1"],
+    "approval:1.status": "retracted",
+    "authority:ok.status": "retracted"
+  },
+  "humanAdjudication": "proposed"
+}

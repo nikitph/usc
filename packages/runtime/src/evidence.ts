@@ -50,10 +50,41 @@ export class EvidenceFixpointEngine {
     throw new RuntimeError(`fixpoint did not converge within ${maxIterations} iterations`);
   }
 
+  retractFact(id: string): EvidenceFact {
+    const fact = this.#readFact(id);
+    if (fact.status !== "active") return cloneFact(fact);
+    const retracted = freezeFact({ ...fact, status: "retracted" });
+    this.#facts.set(id, retracted);
+    this.#propagateInactiveSupports();
+    return cloneFact(retracted);
+  }
+
+  supersedeFact(id: string, replacement: EvidenceFactDraft): EvidenceFact {
+    const fact = this.#readFact(id);
+    if (fact.status === "active") {
+      this.#facts.set(id, freezeFact({ ...fact, status: "superseded" }));
+      this.#propagateInactiveSupports();
+    }
+    return this.assertFact(replacement);
+  }
+
+  expireFacts(nowIso: string): readonly EvidenceFact[] {
+    const nowMs = Date.parse(nowIso);
+    if (!Number.isFinite(nowMs)) throw new RuntimeError(`invalid clock value "${nowIso}"`);
+    const expired: EvidenceFact[] = [];
+    for (const fact of this.activeFacts()) {
+      if (fact.validUntil !== undefined && Date.parse(fact.validUntil) < nowMs) {
+        const retracted = freezeFact({ ...fact, status: "retracted" });
+        this.#facts.set(fact.id, retracted);
+        expired.push(cloneFact(retracted));
+      }
+    }
+    if (expired.length > 0) this.#propagateInactiveSupports();
+    return expired.sort(compareFacts);
+  }
+
   getFact(id: string): EvidenceFact {
-    const fact = this.#facts.get(id);
-    if (fact === undefined) throw new RuntimeError(`evidence fact "${id}" not found`);
-    return cloneFact(fact);
+    return cloneFact(this.#readFact(id));
   }
 
   activeFacts(): readonly EvidenceFact[] {
@@ -83,6 +114,27 @@ export class EvidenceFixpointEngine {
     }
     this.#facts.set(fact.id, fact);
     return cloneFact(fact);
+  }
+
+  #readFact(id: string): EvidenceFact {
+    const fact = this.#facts.get(id);
+    if (fact === undefined) throw new RuntimeError(`evidence fact "${id}" not found`);
+    return fact;
+  }
+
+  #propagateInactiveSupports(): void {
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const fact of [...this.#facts.values()].sort(compareFacts)) {
+        if (fact.status !== "active") continue;
+        const hasInactiveSupport = fact.supports.some((supportId) => this.#readFact(supportId).status !== "active");
+        if (hasInactiveSupport) {
+          this.#facts.set(fact.id, freezeFact({ ...fact, status: "retracted" }));
+          changed = true;
+        }
+      }
+    }
   }
 }
 

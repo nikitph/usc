@@ -1,0 +1,13 @@
+{
+  "id": "runtime-010-fixpoint-retraction-propagation",
+  "subsystem": "runtime",
+  "name": "fixpoint-retraction-propagation",
+  "rationale": "M2-02 draft fixture: retracting a base evidence fact retracts all active derived facts that list it in their support set.",
+  "operation": "assert log:1, derive claim:terminal from log:1, retract log:1",
+  "expect": {
+    "log:1.status": "retracted",
+    "claim:terminal.status": "retracted",
+    "activeFactIds": []
+  },
+  "humanAdjudication": "proposed"
+}
