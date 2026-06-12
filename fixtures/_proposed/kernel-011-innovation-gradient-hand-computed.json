@@ -1,0 +1,31 @@
+{
+  "runner": "kernel",
+  "name": "innovation gradient ranks authority boundary and composition as two-unlock upgrades",
+  "kind": "innovation_gradient",
+  "input": {
+    "motifVector": {
+      "representation": 1,
+      "feedback": 1,
+      "search": 1,
+      "scarcity": 1,
+      "communication": 1,
+      "invariant": 1
+    }
+  },
+  "expect": {
+    "top": [
+      { "motif": "authority", "unlockCount": 2, "unlockedComposites": ["negotiation", "reconciliation"] },
+      { "motif": "boundary", "unlockCount": 2, "unlockedComposites": ["abstraction", "model"] },
+      { "motif": "composition", "unlockCount": 2, "unlockedComposites": ["emergence", "queue"] }
+    ]
+  },
+  "working": [
+    "Base full-strength motifs: representation, feedback, search, scarcity, communication, invariant.",
+    "Closure before any upgrade: prediction = representation+feedback; compression = representation+scarcity; optimization = prediction+search+scarcity.",
+    "Add authority: reconciliation = communication+invariant+authority; negotiation = communication+scarcity+authority. Two newly reachable composites.",
+    "Add boundary: abstraction = boundary+representation; model = representation+prediction+boundary. Two newly reachable composites.",
+    "Add composition: emergence = composition+feedback; queue = scarcity+composition. Two newly reachable composites.",
+    "Tie-break is deterministic by motif name, so authority, boundary, composition are the top three in that order."
+  ],
+  "rationale": "PROPOSED (agent-drafted, human adjudication pending for K-07). This is the hand-computed innovation-gradient fixture required by packets/mvp0/K-07-geometry-engine.md. It stays in fixtures/_proposed/ until human approval moves it into the live fixture tree."
+}
