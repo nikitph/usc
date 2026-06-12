@@ -1,0 +1,12 @@
+{
+  "id": "store-003-experimental-ancestor",
+  "subsystem": "store",
+  "name": "experimental-ancestor-detection",
+  "rationale": "M1-01 draft fixture: store provenance must agree with kernel provenance_check semantics by treating the queried artifact and every ancestor as part of the experimental ancestry set.",
+  "operation": "insert an experimental source parent chain and call hasExperimentalAncestor(verdict)",
+  "expect": {
+    "experimentalChain": true,
+    "cleanArtifact": false
+  },
+  "humanAdjudication": "proposed"
+}

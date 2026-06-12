@@ -1,0 +1,15 @@
+{
+  "id": "store-001-dedup",
+  "subsystem": "store",
+  "name": "dedup-on-identical-content",
+  "rationale": "M1-01 draft fixture: content-addressed artifact insertion is the LLM cache; inserting the same valid envelope twice returns the existing artifact without creating a second row.",
+  "operation": "putArtifact twice with an identical source envelope",
+  "expect": {
+    "firstInsert": "stored",
+    "secondInsert": "deduplicated",
+    "countByKind": {
+      "source": 1
+    }
+  },
+  "humanAdjudication": "proposed"
+}

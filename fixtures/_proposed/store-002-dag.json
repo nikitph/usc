@@ -1,0 +1,12 @@
+{
+  "id": "store-002-dag",
+  "subsystem": "store",
+  "name": "dag-reconstruction",
+  "rationale": "M1-01 draft fixture: derivation reconstruction is self-inclusive and walks parent links from verdict to raw source in deterministic order.",
+  "operation": "insert source -> token_stream -> verdict and call getDerivationDag(verdict)",
+  "expect": {
+    "order": ["verdict", "token_stream", "source"],
+    "selfInclusive": true
+  },
+  "humanAdjudication": "proposed"
+}
