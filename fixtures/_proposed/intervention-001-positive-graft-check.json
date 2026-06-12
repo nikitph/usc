@@ -1,0 +1,16 @@
+{
+  "id": "intervention-001-positive-graft-check",
+  "subsystem": "intervention",
+  "name": "positive-graft-check",
+  "rationale": "M4-01 draft fixture: all pattern valence requirements bind to confirmed provisions in the target node scope chain, so the graft check is valid.",
+  "operation": "bind authority and feedback requirements from a pattern node to a target node",
+  "expect": {
+    "status": "graftable",
+    "verdict": "valid",
+    "bindings": [
+      ["requires-authority", "target-close", "bound"],
+      ["requires-feedback", "target-close", "bound"]
+    ]
+  },
+  "humanAdjudication": "proposed"
+}

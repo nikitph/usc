@@ -1,6 +1,7 @@
 export { loadRulebase } from "./rulebase/load.ts";
 export { evaluate, type KernelReport } from "./evaluate.ts";
 export { astToFacts } from "./facts/ast-to-facts.ts";
+export { graftCheck } from "./graft-check.ts";
 export {
   affectedChecks,
   innovationGradient,
@@ -11,6 +12,17 @@ export {
 export { evaluateAnd, evaluateNot, evaluateOr, type Verdict3Value } from "./verdict/kleene.ts";
 export { buildCheckVerdict, type CheckVerdict, type EvidenceGap } from "./verdict/build.ts";
 export type { Fact, MotifAstNode } from "./facts/types.ts";
+export type {
+  BindingCandidate,
+  BindingStatus,
+  GraftBinding,
+  GraftCheckInput,
+  GraftCheckResult,
+  GraftCheckStatus,
+  GraftEvidenceGap,
+  GraftRankingInputs,
+  ValenceRequirement,
+} from "./graft-check.ts";
 export type {
   AstNodeFacts,
   GradientEntry,

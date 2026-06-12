@@ -1,0 +1,16 @@
+{
+  "id": "intervention-002-unknown-binding",
+  "subsystem": "intervention",
+  "name": "unknown-binding",
+  "rationale": "M4-01 draft fixture: an unverified provision does not become a valid graft binding; the check returns pending evidence with a named gap.",
+  "operation": "bind authority to confirmed evidence and feedback to unverified evidence",
+  "expect": {
+    "status": "graftable_pending_evidence",
+    "verdict": "unknown",
+    "gap": {
+      "requirementId": "requires-feedback",
+      "reason": "unverified_provision"
+    }
+  },
+  "humanAdjudication": "proposed"
+}
