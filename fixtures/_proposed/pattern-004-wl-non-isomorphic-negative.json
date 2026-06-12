@@ -1,0 +1,12 @@
+{
+  "id": "pattern-004-wl-non-isomorphic-negative",
+  "subsystem": "patterns",
+  "name": "wl-non-isomorphic-negative",
+  "rationale": "M3-02 draft fixture: changing the relation/direction changes the WL canonical id and must not produce a duplicate group.",
+  "operation": "canonicalize p-left(a->b requires) and p-right(y->x causes)",
+  "expect": {
+    "sameCanonicalId": false,
+    "duplicateGroupCount": 0
+  },
+  "humanAdjudication": "proposed"
+}

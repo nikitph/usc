@@ -1,0 +1,12 @@
+{
+  "id": "pattern-003-wl-isomorphic-dedup",
+  "subsystem": "patterns",
+  "name": "wl-isomorphic-pattern-dedup",
+  "rationale": "M3-02 draft fixture: two patterns with renamed node ids but identical motif graph structure produce the same WL canonical id and one duplicate group.",
+  "operation": "canonicalize p-left(a->b requires) and p-right(x->y requires)",
+  "expect": {
+    "sameCanonicalId": true,
+    "duplicateGroupPatternIds": ["p-left", "p-right"]
+  },
+  "humanAdjudication": "proposed"
+}
