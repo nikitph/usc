@@ -1,0 +1,29 @@
+{
+  "passage": "Authority approves the external commitment before reconciliation closes the work.",
+  "domain": "synthetic_governance",
+  "goldTokens": [
+    {
+      "id": "case-002-authority",
+      "motif": "authority",
+      "evidence": [{ "sourceArtifactId": "case-002", "span": { "start": 0, "end": 9 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "domainTerm": "Authority",
+      "extractorVersion": "gold"
+    },
+    {
+      "id": "case-002-reconciliation",
+      "motif": "reconciliation",
+      "evidence": [{ "sourceArtifactId": "case-002", "span": { "start": 50, "end": 64 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "domainTerm": "reconciliation",
+      "extractorVersion": "gold"
+    }
+  ],
+  "goldScopes": [
+    { "annotatorMotifs": { "ann1": ["authority", "reconciliation"], "ann2": ["authority", "reconciliation"] } }
+  ],
+  "annotators": ["ann1", "ann2"],
+  "adjudicationNotes": "Synthetic governance case for authority and reconciliation."
+}

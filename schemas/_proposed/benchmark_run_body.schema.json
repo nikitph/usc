@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "usc://schemas/_proposed/benchmark-run-body",
+  "title": "BenchmarkRunBody",
+  "description": "PROPOSED for human approval in K-08. Body shape for benchmark_run artifacts emitted by workers/offline/benchmark.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["extractorVersion", "caseCount", "perMotif", "hubAggregate", "scopeAccuracy", "confusionPairs", "cohenKappa"],
+  "properties": {
+    "extractorVersion": { "type": "string", "minLength": 1 },
+    "caseCount": { "type": "integer", "minimum": 0 },
+    "perMotif": { "type": "object" },
+    "hubAggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["precision", "recall", "f1"],
+      "properties": {
+        "precision": { "type": "number", "minimum": 0, "maximum": 1 },
+        "recall": { "type": "number", "minimum": 0, "maximum": 1 },
+        "f1": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "scopeAccuracy": { "type": "number", "minimum": 0, "maximum": 1 },
+    "confusionPairs": { "type": "object" },
+    "cohenKappa": { "type": "number", "minimum": -1, "maximum": 1 }
+  }
+}

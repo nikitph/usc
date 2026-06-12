@@ -1,0 +1,48 @@
+{
+  "passage": "The boundary protects state and feedback confirms each transition.",
+  "domain": "synthetic_systems",
+  "goldTokens": [
+    {
+      "id": "case-001-boundary",
+      "motif": "boundary",
+      "evidence": [{ "sourceArtifactId": "case-001", "span": { "start": 4, "end": 12 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "boundaryRole": "scope_delimiter",
+      "domainTerm": "boundary",
+      "extractorVersion": "gold"
+    },
+    {
+      "id": "case-001-state",
+      "motif": "state",
+      "evidence": [{ "sourceArtifactId": "case-001", "span": { "start": 22, "end": 27 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "domainTerm": "state",
+      "extractorVersion": "gold"
+    },
+    {
+      "id": "case-001-feedback",
+      "motif": "feedback",
+      "evidence": [{ "sourceArtifactId": "case-001", "span": { "start": 32, "end": 40 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "domainTerm": "feedback",
+      "extractorVersion": "gold"
+    },
+    {
+      "id": "case-001-transition",
+      "motif": "transition",
+      "evidence": [{ "sourceArtifactId": "case-001", "span": { "start": 55, "end": 65 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "domainTerm": "transition",
+      "extractorVersion": "gold"
+    }
+  ],
+  "goldScopes": [
+    { "annotatorMotifs": { "ann1": ["boundary", "state", "feedback", "transition"], "ann2": ["boundary", "state", "feedback", "transition"] } }
+  ],
+  "annotators": ["ann1", "ann2"],
+  "adjudicationNotes": "Synthetic positive case for boundary scope, state, feedback, and transition."
+}

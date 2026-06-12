@@ -1,0 +1,38 @@
+{
+  "passage": "Replication creates copies; synchronization keeps the copies consistent under scarcity.",
+  "domain": "synthetic_distributed_systems",
+  "goldTokens": [
+    {
+      "id": "case-003-replication",
+      "motif": "replication",
+      "evidence": [{ "sourceArtifactId": "case-003", "span": { "start": 0, "end": 11 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "domainTerm": "Replication",
+      "extractorVersion": "gold"
+    },
+    {
+      "id": "case-003-synchronization",
+      "motif": "synchronization",
+      "evidence": [{ "sourceArtifactId": "case-003", "span": { "start": 28, "end": 43 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "domainTerm": "synchronization",
+      "extractorVersion": "gold"
+    },
+    {
+      "id": "case-003-scarcity",
+      "motif": "scarcity",
+      "evidence": [{ "sourceArtifactId": "case-003", "span": { "start": 76, "end": 84 }, "extractionMethod": "human" }],
+      "confidence": 1,
+      "role": "explicit",
+      "domainTerm": "scarcity",
+      "extractorVersion": "gold"
+    }
+  ],
+  "goldScopes": [
+    { "annotatorMotifs": { "ann1": ["replication", "synchronization", "scarcity"], "ann2": ["replication", "synchronization", "scarcity"] } }
+  ],
+  "annotators": ["ann1", "ann2"],
+  "adjudicationNotes": "Synthetic distributed-systems case for replication, synchronization, and scarcity."
+}
