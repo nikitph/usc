@@ -1,0 +1,13 @@
+{
+  "id": "runtime-008-fixpoint-support-sets",
+  "subsystem": "runtime",
+  "name": "fixpoint-support-set-tracking",
+  "rationale": "M2-01 draft fixture: derived evidence facts must retain the exact active support facts that justified them.",
+  "operation": "assert log:1, derive claim:terminal supported by log:1",
+  "expect": {
+    "derivedFact": "claim:terminal",
+    "supports": ["log:1"],
+    "status": "active"
+  },
+  "humanAdjudication": "proposed"
+}

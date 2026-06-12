@@ -108,4 +108,33 @@ export interface TerminalClaimDetector {
   detect(sourceText: string, sourceArtifactId: ArtifactId): readonly CandidateTerminalClaim[];
 }
 
+export type EvidenceFactStatus = "active" | "retracted" | "superseded";
+
+export interface EvidenceFact {
+  readonly id: string;
+  readonly body: unknown;
+  readonly assertedAt: string;
+  readonly validUntil?: string;
+  readonly supports: readonly string[];
+  readonly status: EvidenceFactStatus;
+}
+
+export interface EvidenceFactDraft {
+  readonly id: string;
+  readonly body: unknown;
+  readonly assertedAt: string;
+  readonly validUntil?: string;
+  readonly supports?: readonly string[];
+}
+
+export interface EvidenceDerivationRule {
+  readonly id: string;
+  derive(activeFacts: readonly EvidenceFact[]): readonly EvidenceFactDraft[];
+}
+
+export interface FixpointRunReport {
+  readonly iterations: number;
+  readonly derivedFactIds: readonly string[];
+}
+
 export type { ArtifactEnvelope, ArtifactId, ArtifactRepository, Fact, MotifName, MotifObligation, MotifToken, ProcessIrEventType };

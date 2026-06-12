@@ -1,4 +1,5 @@
 export { ObligationLedgerError, ParserError, ProcessIrError, RuntimeError } from "./errors.ts";
+export { EvidenceFixpointEngine } from "./evidence.ts";
 export {
   KeywordExtractionBackend,
   TerminalClaimKeywordDetector,
@@ -29,6 +30,11 @@ export type {
   ExtractionBackend,
   ExtractionInput,
   ExtractionRegistry,
+  EvidenceDerivationRule,
+  EvidenceFact,
+  EvidenceFactDraft,
+  EvidenceFactStatus,
+  FixpointRunReport,
   LexerRunResult,
   RawExtraction,
   TerminalClaimDetector,

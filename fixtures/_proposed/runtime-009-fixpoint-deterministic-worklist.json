@@ -1,0 +1,12 @@
+{
+  "id": "runtime-009-fixpoint-deterministic-worklist",
+  "subsystem": "runtime",
+  "name": "fixpoint-deterministic-worklist",
+  "rationale": "M2-01 draft fixture: derivation rules and produced facts are evaluated in sorted order so the same inputs converge to byte-identical active fact sets.",
+  "operation": "assert a; rules derive b from a and c from b",
+  "expect": {
+    "activeFactIds": ["a", "b", "c"],
+    "derivedFactIds": ["b", "c"]
+  },
+  "humanAdjudication": "proposed"
+}
