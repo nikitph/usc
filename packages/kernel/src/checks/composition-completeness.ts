@@ -31,8 +31,13 @@ export function checkCompositionCompleteness(
     for (const composite of claimedComposites) {
       const prerequisites = [...(prerequisitesByComposite.get(composite) ?? [])].sort();
       for (const prerequisite of prerequisites) {
+        // Evidence quality FIRST (INV-1): an explicit experimental/unverified
+        // qualifier marks the motif's presence as below the bar, and a bare
+        // claims() fact must never upgrade it back to success.
         const provision = index.providedByNode.get(nodeId)?.get(prerequisite);
-        if (claimed.has(prerequisite) || provision === "confirmed") continue;
+        if (provision === "confirmed" || (provision === undefined && claimed.has(prerequisite))) {
+          continue;
+        }
         if (provision === "experimental") {
           value = evaluateAnd(value, "unknown");
           gaps.push({

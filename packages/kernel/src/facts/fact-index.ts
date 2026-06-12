@@ -32,7 +32,8 @@ export interface FactIndex {
   readonly inheritedInvariantsByNode: ReadonlyMap<string, ReadonlySet<string>>;
   readonly weakenedInvariantsByNode: ReadonlyMap<string, ReadonlySet<string>>;
   readonly unknownInvariantsByNode: ReadonlyMap<string, ReadonlySet<string>>;
-  readonly mode: EvaluationMode;
+  /** undefined = no mode fact was given; checks must treat that as unknown, never pick a side (INV-1/INV-6). */
+  readonly mode: EvaluationMode | undefined;
 }
 
 const MOTIF_NAMES = new Set<string>(MotifTokenSchema.innerType().shape.motif.options);
@@ -207,8 +208,6 @@ export function buildFactIndex(facts: readonly Fact[]): FactIndex {
     inheritedInvariantsByNode: inherited,
     weakenedInvariantsByNode: weakened,
     unknownInvariantsByNode: unknownInvariants,
-    // Research is the documented default: systems live in research mode until
-    // their extractor version passes benchmark bars (blueprint §5.3).
-    mode: mode ?? "research",
+    mode,
   };
 }

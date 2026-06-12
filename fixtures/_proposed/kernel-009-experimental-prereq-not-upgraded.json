@@ -1,0 +1,18 @@
+{
+  "runner": "kernel",
+  "name": "claimed prerequisite provided only by an experimental token is unknown, not valid",
+  "facts": [
+    { "fact": "node", "args": ["n1"] },
+    { "fact": "claims", "args": ["n1", "abstraction"] },
+    { "fact": "claims", "args": ["n1", "boundary"] },
+    { "fact": "claims", "args": ["n1", "representation"] },
+    { "fact": "provided_in_scope_chain", "args": ["n1", "representation", "experimental"] }
+  ],
+  "expect": {
+    "check": "composition_completeness",
+    "nodeOrClaim": "n1",
+    "value": "unknown",
+    "gapKinds": ["below_extraction_bar"]
+  },
+  "rationale": "PROPOSED (agent-drafted, owner adjudication pending). Owner-reported INV-1 violation 2026-06-13: a claims() short-circuit upgraded a below-bar (experimental) representation token to success, so abstraction compiled valid. Spec §4.1: prereq presence depending on an experimental token is unknown. Pinned meanwhile by packages/kernel/test/inv1-regressions.test.ts."
+}

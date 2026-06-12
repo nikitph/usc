@@ -23,8 +23,10 @@ export function checkFepViability(rulebase: Rulebase, index: FactIndex): CheckVe
     const gaps: EvidenceGap[] = [];
     const missingMotifs: string[] = [];
     for (const motif of [...requiredMotifs].sort()) {
+      // Evidence quality FIRST (INV-1): an explicit qualifier on the provision
+      // marks this motif below the bar; claims() must not upgrade it.
       const provision = index.providedByNode.get(nodeId)?.get(motif);
-      if (claimed.has(motif) || provision === "confirmed") continue;
+      if (provision === "confirmed" || (provision === undefined && claimed.has(motif))) continue;
       if (provision === "experimental" || provision === "unverified") {
         value = evaluateAnd(value, "unknown");
         gaps.push({

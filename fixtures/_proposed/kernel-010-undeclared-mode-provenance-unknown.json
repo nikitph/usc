@@ -1,0 +1,17 @@
+{
+  "runner": "kernel",
+  "name": "experimental ancestry with undeclared evaluation mode is unknown, never silently research-permissive",
+  "facts": [
+    { "fact": "artifact", "args": ["a_verdict", "verdict"] },
+    { "fact": "parent", "args": ["a_verdict", "a_tokens"] },
+    { "fact": "tagged", "args": ["a_tokens", "experimental"] }
+  ],
+  "expect": {
+    "check": "provenance_check",
+    "nodeOrClaim": "a_verdict",
+    "value": "unknown",
+    "gapKinds": ["missing_evidence"],
+    "bindingsInclude": { "experimentalAncestor": "a_tokens" }
+  },
+  "rationale": "PROPOSED (agent-drafted, owner adjudication pending). Owner-reported INV-6/INV-1 violation 2026-06-13: absent mode fact defaulted to research, returning valid-with-advisory for experimental ancestry — mode omission silently chose the permissive path. With mode undeclared and ancestry experimental, the kernel cannot decide between production-invalid and research-valid: unknown with a named gap. Pinned meanwhile by packages/kernel/test/inv1-regressions.test.ts."
+}
