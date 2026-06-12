@@ -11,7 +11,7 @@ import obligationRulesJson from "../../rulebase/obligation_rules.json" with { ty
 import { RulebaseConflictError, SchemaValidationError } from "../errors.ts";
 import {
   PROCESS_IR_EVENT_TYPES,
-  type LoadedRulebase,
+  SEMANTIC_CHECK_IDS,
   type MotifName,
   type Rulebase,
   type RulebaseHash,
@@ -23,16 +23,6 @@ const OBLIGATION_TYPES = new Set<string>(MotifObligationSchema.shape.type.option
 const SAFE_DEFAULTS = new Set<string>(MotifObligationSchema.shape.safeDefault.options);
 const EVENT_TYPES = new Set<string>(PROCESS_IR_EVENT_TYPES);
 
-/** The checks the evaluator implements; the rulebase must define exactly these (specs/kernel/SPEC.md §4). */
-const REQUIRED_SEMANTIC_CHECKS = [
-  "composition_completeness",
-  "invariant_propagation",
-  "fep_viability",
-  "collision_detection",
-  "terminal_validity",
-  "provenance_check",
-] as const;
-
 const HUB_COUNT = 6; // paper §4.1
 
 /**
@@ -41,7 +31,7 @@ const HUB_COUNT = 6; // paper §4.1
  * sha256(canonicalJson of the six files keyed by sorted basename) via the
  * single shared hash path (specs/kernel/SPEC.md §3).
  */
-export function loadRulebase(): LoadedRulebase {
+export function loadRulebase(): Rulebase {
   const motifs = validateMotifs(motifsJson);
   const { requires, emergentComposites } = validateComposition(compositionJson);
   const collisions = validateCollisions(collisionsJson);
@@ -50,7 +40,18 @@ export function loadRulebase(): LoadedRulebase {
   const { semanticChecks, diagnosticPasses } = validateDiagnostics(diagnosticsJson);
   const facets = validateFacets(facetsJson);
 
-  const rulebase: Rulebase = deepFreeze({
+  const hash = sha256Hex(
+    canonicalJson({
+      "collisions.json": collisionsJson,
+      "composition.json": compositionJson,
+      "diagnostics.json": diagnosticsJson,
+      "facets.json": facetsJson,
+      "motifs.json": motifsJson,
+      "obligation_rules.json": obligationRulesJson,
+    }),
+  ) as RulebaseHash;
+  return deepFreeze({
+    hash,
     motifs,
     requires,
     emergentComposites,
@@ -62,17 +63,6 @@ export function loadRulebase(): LoadedRulebase {
     diagnosticPasses,
     facets,
   });
-  const rulebaseHash = sha256Hex(
-    canonicalJson({
-      "collisions.json": collisionsJson,
-      "composition.json": compositionJson,
-      "diagnostics.json": diagnosticsJson,
-      "facets.json": facetsJson,
-      "motifs.json": motifsJson,
-      "obligation_rules.json": obligationRulesJson,
-    }),
-  ) as RulebaseHash;
-  return Object.freeze({ rulebase, rulebaseHash });
 }
 
 function fail(file: string, message: string): never {
@@ -273,7 +263,7 @@ function validateDiagnostics(raw: typeof diagnosticsJson): {
 } {
   const file = "diagnostics.json";
   const checkNames = new Set(raw.semanticChecks.map((check) => check.name));
-  for (const required of REQUIRED_SEMANTIC_CHECKS) {
+  for (const required of SEMANTIC_CHECK_IDS) {
     if (!checkNames.has(required)) conflict(file, `missing required semantic check "${required}"`);
   }
   if (checkNames.size !== raw.semanticChecks.length) conflict(file, "duplicate semantic check names");
@@ -281,6 +271,12 @@ function validateDiagnostics(raw: typeof diagnosticsJson): {
     requireNonEmptyString(file, check.question, `check "${check.name}" question`);
     if ("requiredMotifs" in check && check.requiredMotifs !== undefined) {
       for (const motif of check.requiredMotifs) requireMotifName(file, motif, `check "${check.name}" requiredMotifs`);
+    }
+    if (check.name === "fep_viability") {
+      const requiredMotifs = "requiredMotifs" in check ? check.requiredMotifs : undefined;
+      if (requiredMotifs === undefined || requiredMotifs.length === 0) {
+        conflict(file, "fep_viability must declare requiredMotifs (the viability manifold, paper §5)");
+      }
     }
   }
   for (const diagnosticPass of raw.diagnosticPasses) {

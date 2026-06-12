@@ -16,6 +16,17 @@ export type ProcessIrEventType = (typeof PROCESS_IR_EVENT_TYPES)[number];
 export type ObligationType = MotifObligation["type"];
 export type ObligationSafeDefault = MotifObligation["safeDefault"];
 
+/** The six checks evaluate() implements (specs/kernel/SPEC.md §4). */
+export const SEMANTIC_CHECK_IDS = [
+  "composition_completeness",
+  "invariant_propagation",
+  "fep_viability",
+  "collision_detection",
+  "terminal_validity",
+  "provenance_check",
+] as const;
+export type CheckId = (typeof SEMANTIC_CHECK_IDS)[number];
+
 export type MotifGroup = "A" | "B" | "C" | "D" | "E" | "F";
 
 export interface MotifDefinition {
@@ -107,6 +118,7 @@ export interface MotifFacets {
 }
 
 export interface Rulebase {
+  readonly hash: RulebaseHash;
   readonly motifs: readonly MotifDefinition[];
   readonly requires: readonly CompositionRequirement[];
   readonly emergentComposites: readonly EmergentComposite[];
@@ -121,8 +133,3 @@ export interface Rulebase {
 
 /** Branded at the boundary (STANDARDS.md D2); constructed only by loadRulebase. */
 export type RulebaseHash = string & { readonly __brand: "RulebaseHash" };
-
-export interface LoadedRulebase {
-  readonly rulebase: Rulebase;
-  readonly rulebaseHash: RulebaseHash;
-}

@@ -7,7 +7,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test:properties": "node --import tsx --test test/rulebase-load.test.ts"
+    "test:properties": "node --import tsx --test \"test/*.test.ts\""
   },
   "dependencies": {
     "@usc/shared": "workspace:*"
