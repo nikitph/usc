@@ -1,0 +1,12 @@
+{
+  "id": "runtime-002-boundary-concept-reference",
+  "subsystem": "runtime",
+  "name": "boundary-as-concept-negative",
+  "rationale": "M1-02 draft fixture: tokens with motif=boundary and boundaryRole=concept_reference are ordinary claims and must not open scopes.",
+  "operation": "parse a boundary concept reference plus representation token",
+  "expect": {
+    "rootClaims": ["boundary", "representation"],
+    "openedScopes": []
+  },
+  "humanAdjudication": "proposed"
+}

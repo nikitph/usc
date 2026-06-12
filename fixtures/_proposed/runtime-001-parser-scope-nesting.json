@@ -1,0 +1,13 @@
+{
+  "id": "runtime-001-parser-scope-nesting",
+  "subsystem": "runtime",
+  "name": "parser-scope-nesting",
+  "rationale": "M1-02 draft fixture: boundary tokens marked scope_delimiter open deterministic AST scopes by span containment; child scopes inherit only through the parsed nesting.",
+  "operation": "parse boundary scope containing a nested boundary scope",
+  "expect": {
+    "rootChildren": ["scope:b1"],
+    "scope:b1.claims": ["boundary", "state"],
+    "scope:b2.claims": ["boundary", "feedback"]
+  },
+  "humanAdjudication": "proposed"
+}

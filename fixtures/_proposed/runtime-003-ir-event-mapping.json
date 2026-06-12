@@ -1,0 +1,12 @@
+{
+  "id": "runtime-003-ir-event-mapping",
+  "subsystem": "runtime",
+  "name": "ir-event-type-mapping",
+  "rationale": "M1-02 draft fixture: ProcessIR-lite maps recognized causal event text into the closed event union and maps unknown text to observation rather than inventing a type.",
+  "operation": "build ProcessIR-lite from detected events",
+  "expect": {
+    "deleted production cache": "state_destruction",
+    "noted cleanup in comment": "observation"
+  },
+  "humanAdjudication": "proposed"
+}

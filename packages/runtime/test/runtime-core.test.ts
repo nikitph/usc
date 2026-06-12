@@ -1,0 +1,120 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+
+import { evaluate, loadRulebase, type Fact, type MotifName } from "@usc/kernel";
+import type { MotifToken } from "@usc/shared/generated";
+
+import {
+  buildProcessIrLite,
+  classifyEventText,
+  materializeObligationLedger,
+  obligationLedgerToFacts,
+  parseMotifTokens,
+  processIrTerminalClaimFacts,
+  runtimeFactsForKernel,
+} from "../src/index.ts";
+
+const sourceArtifactId = "source-trace";
+
+test("should_parse_boundary_scope_nesting_from_span_containment", () => {
+  const ast = parseMotifTokens(
+    [
+      token("b1", "boundary", 0, 100, { boundaryRole: "scope_delimiter" }),
+      token("state1", "state", 10, 20),
+      token("b2", "boundary", 30, 80, { boundaryRole: "scope_delimiter" }),
+      token("feedback1", "feedback", 40, 50),
+    ],
+    { rootId: "trace" },
+  );
+
+  assert.deepEqual(ast.claims, []);
+  assert.equal(ast.children?.[0]?.id, "scope:b1");
+  assert.deepEqual(ast.children?.[0]?.claims, ["boundary", "state"]);
+  assert.equal(ast.children?.[0]?.children?.[0]?.id, "scope:b2");
+  assert.deepEqual(ast.children?.[0]?.children?.[0]?.claims, ["boundary", "feedback"]);
+});
+
+test("should_keep_boundary_concept_reference_as_claim_without_opening_scope", () => {
+  const ast = parseMotifTokens(
+    [
+      token("boundary-concept", "boundary", 0, 8, { boundaryRole: "concept_reference" }),
+      token("representation1", "representation", 10, 20),
+    ],
+    { rootId: "trace" },
+  );
+
+  assert.deepEqual(ast.claims, ["boundary", "representation"]);
+  assert.equal(ast.children?.length, 0);
+});
+
+test("should_map_unknown_event_text_to_observation", () => {
+  assert.equal(classifyEventText("noted a possible cleanup in a comment"), "observation");
+  assert.equal(classifyEventText("deleted the production cache"), "state_destruction");
+});
+
+test("should_materialize_ledger_from_ir_events_only", () => {
+  const rulebase = loadRulebase();
+  const ir = buildProcessIrLite([
+    { id: "event-1", text: "deleted the production cache", sourceTokenIds: ["state1"], terminalClaimId: "claim-1", nodeId: "trace" },
+    { id: "event-2", text: "noted a comment", sourceTokenIds: ["state1"], terminalClaimId: "claim-2", nodeId: "trace" },
+  ]);
+
+  const ledger = materializeObligationLedger(rulebase, ir, "case-1");
+
+  assert.equal(ledger.length, 1);
+  assert.equal(ledger[0]?.claimId, "claim-1");
+  assert.equal(ledger[0]?.obligation.type, "evidence");
+  assert.equal(ledger[0]?.obligation.status, "unknown");
+});
+
+test("should_emit_structured_facts_consumable_by_kernel_evaluate", () => {
+  const rulebase = loadRulebase();
+  const ast = parseMotifTokens([token("terminal", "terminal_state", 0, 20)], { rootId: "trace" });
+  const ir = buildProcessIrLite([
+    { id: "event-1", text: "deleted the production cache", sourceTokenIds: ["terminal"], terminalClaimId: "claim-1", nodeId: "trace" },
+  ]);
+  const ledger = materializeObligationLedger(rulebase, ir, "case-1");
+  const facts = flattenFacts(runtimeFactsForKernel(ast, ir, ledger));
+
+  const report = evaluate(rulebase, facts);
+  const verdict = report.verdicts.find(
+    (entry) => entry.check === "terminal_validity" && entry.nodeOrClaim === "claim-1",
+  );
+
+  assert.equal(verdict?.verdict.value, "unknown");
+  assert.deepEqual(processIrTerminalClaimFacts(ir), [{ fact: "terminal_claim", args: ["claim-1", "trace"] }]);
+  assert.equal(obligationLedgerToFacts(ledger).length, 1);
+});
+
+function token(
+  id: string,
+  motif: MotifName,
+  start: number,
+  end: number,
+  options: { readonly boundaryRole?: "scope_delimiter" | "concept_reference" } = {},
+): MotifToken {
+  const base = {
+    id,
+    motif,
+    evidence: [
+      {
+        sourceArtifactId,
+        span: { start, end },
+        extractionMethod: "deterministic" as const,
+      },
+    ],
+    confidence: 1,
+    role: "explicit" as const,
+    domainTerm: motif,
+    extractorVersion: "test-parser-v1",
+  };
+  return options.boundaryRole === undefined ? base : { ...base, boundaryRole: options.boundaryRole };
+}
+
+function flattenFacts(parts: {
+  readonly astFacts: readonly Fact[];
+  readonly terminalClaimFacts: readonly Fact[];
+  readonly obligationFacts: readonly Fact[];
+}): readonly Fact[] {
+  return [...parts.astFacts, ...parts.terminalClaimFacts, ...parts.obligationFacts];
+}

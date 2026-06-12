@@ -1,0 +1,13 @@
+{
+  "id": "runtime-004-ledger-obligations",
+  "subsystem": "runtime",
+  "name": "ledger-obligations-from-ir-only",
+  "rationale": "M1-02 draft fixture: the obligation ledger materializes obligations from kernel obligation_rules on IR-confirmed events only; observation opens nothing.",
+  "operation": "materialize ledger for state_destruction plus observation events",
+  "expect": {
+    "state_destructionObligations": 1,
+    "observationObligations": 0,
+    "statusBeforeEvidenceResolution": "unknown"
+  },
+  "humanAdjudication": "proposed"
+}
