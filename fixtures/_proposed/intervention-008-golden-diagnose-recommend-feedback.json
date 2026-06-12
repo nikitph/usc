@@ -1,0 +1,14 @@
+{
+  "id": "intervention-008-golden-diagnose-recommend-feedback",
+  "subsystem": "intervention",
+  "name": "golden-diagnose-recommend-feedback",
+  "rationale": "M4-05 draft fixture: the expired-authority golden incident flows from diagnosis to recommendation artifacts, emitted review outputs, and accepted feedback_event capture.",
+  "operation": "run golden diagnose to recommend to feedback smoke",
+  "expect": {
+    "diagnosis": "expired authority before terminal closure",
+    "recommendation": "recommendation:golden-expired-authority",
+    "feedbackOutcome": "accepted",
+    "artifactKinds": ["graft_plan", "recommendation", "feedback_event"]
+  },
+  "humanAdjudication": "proposed"
+}

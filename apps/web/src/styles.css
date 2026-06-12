@@ -134,7 +134,8 @@ h3 {
 
 .review-panel,
 .retrieval-panel,
-.recommendation-panel {
+.recommendation-panel,
+.feedback-panel {
   margin: 16px auto 0;
   max-width: 1180px;
 }
@@ -293,6 +294,37 @@ h3 {
   font-style: normal;
 }
 
+.feedback-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.feedback-row {
+  align-items: center;
+  background: #f8faf8;
+  border: 1px solid #dbe3dd;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 120px minmax(0, 1fr) 180px;
+  padding: 12px;
+}
+
+.feedback-row strong {
+  color: #176334;
+  text-transform: uppercase;
+}
+
+.feedback-row span,
+.feedback-row small {
+  overflow-wrap: anywhere;
+}
+
+.feedback-row small {
+  color: #5b6d62;
+}
+
 .run-button {
   align-items: start;
   background: #f8faf8;
@@ -417,7 +449,8 @@ th {
   .workspace,
   .retrieval-row,
   .retrieval-row dl,
-  .recommendation-row {
+  .recommendation-row,
+  .feedback-row {
     grid-template-columns: 1fr;
   }
 }

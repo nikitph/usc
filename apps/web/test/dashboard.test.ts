@@ -3,6 +3,8 @@ import { test } from "node:test";
 
 import {
   dashboardMetrics,
+  feedbackOutcomeCounts,
+  feedbackSummaryRows,
   patternReviewMetrics,
   patternReviewRows,
   orderedRecommendationRows,
@@ -62,4 +64,9 @@ test("should_order_recommendation_rows_by_diagnosis_gain_rank", () => {
     orderedRecommendationRows(recommendationRows).map((row) => row.id),
     ["recommendation:bounded-feedback-authority", "recommendation:patch-feedback"],
   );
+});
+
+test("should_count_feedback_outcomes_for_dashboard_summary", () => {
+  assert.equal(feedbackOutcomeCounts(feedbackSummaryRows).accepted, 1);
+  assert.equal(feedbackOutcomeCounts(feedbackSummaryRows).failed, 0);
 });

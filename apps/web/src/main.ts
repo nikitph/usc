@@ -1,5 +1,7 @@
 import {
   dashboardMetrics,
+  feedbackOutcomeCounts,
+  feedbackSummaryRows,
   patternReviewMetrics,
   patternReviewRows,
   orderedRecommendationRows,
@@ -22,6 +24,7 @@ if (app === null) throw new Error("missing #app root");
 
 const metrics = dashboardMetrics(trapRuns);
 const reviewMetrics = patternReviewMetrics(patternReviewRows);
+const feedbackCounts = feedbackOutcomeCounts(feedbackSummaryRows);
 app.innerHTML = `
   <section class="page-shell">
     <header class="topbar">
@@ -90,6 +93,29 @@ app.innerHTML = `
       </div>
       <div class="recommendation-list">
         ${orderedRecommendationRows(recommendationRows).map(recommendationRow).join("")}
+      </div>
+    </section>
+
+    <section class="feedback-panel" aria-label="feedback summary">
+      <div class="review-header">
+        <div>
+          <p class="eyebrow">Feedback</p>
+          <h2>Golden Outcome Summary</h2>
+        </div>
+        <div class="review-counts">
+          ${reviewMetric("Accepted", feedbackCounts.accepted)}
+          ${reviewMetric("Needs Evidence", feedbackCounts.needs_more_evidence)}
+          ${reviewMetric("Failed", feedbackCounts.failed)}
+        </div>
+      </div>
+      <div class="feedback-list">
+        ${feedbackSummaryRows.map((row) => `
+          <article class="feedback-row">
+            <strong>${row.outcome}</strong>
+            <span>${row.recommendationId}</span>
+            <small>${row.reviewer}</small>
+          </article>
+        `).join("")}
       </div>
     </section>
   </section>

@@ -1,0 +1,160 @@
+{
+  "id": "golden-diagnose-recommend-feedback",
+  "diagnosisVerdictArtifactId": "cb3b82ba2224d3bea2974aeebf3fd7c8cfe07e79cf7642f3c92ccd8611a93dad",
+  "recommendationArtifactId": "8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4",
+  "feedbackArtifactId": "fe5ba85138a17c3f224d1421a416e7005c71de3ed329543e8f1bf5898717d999",
+  "artifacts": [
+    {
+      "id": "bbf05b8fe675ca0a1da0029e772e227aebc1fb0acfe2102cfe7bb55e6ceaa857",
+      "kind": "graft_plan",
+      "body": {
+        "id": "graft-plan:expired-authority-feedback",
+        "status": "graftable",
+        "graftCheck": {
+          "status": "graftable",
+          "verdict": "valid",
+          "bindings": [
+            {
+              "requirementId": "requires-authority",
+              "patternNodeId": "pattern-close",
+              "targetNodeId": "target",
+              "motif": "authority",
+              "status": "bound"
+            },
+            {
+              "requirementId": "requires-feedback",
+              "patternNodeId": "pattern-close",
+              "targetNodeId": "target",
+              "motif": "feedback",
+              "status": "bound"
+            }
+          ],
+          "gaps": [],
+          "rankingInputs": {
+            "boundCount": 2,
+            "unknownCount": 0,
+            "failedCount": 0,
+            "candidateCount": 1
+          }
+        },
+        "operations": [
+          {
+            "op": "add_claim",
+            "nodeId": "target",
+            "motif": "authority"
+          }
+        ],
+        "recompile": {
+          "status": "passed",
+          "beforeFactsHash": "52ed5ca7bf364b88dbb5a3488a30d1d86cf35d04d9c1dab3f6c2a00937450b74",
+          "afterFactsHash": "44987c00bc9c048c96fb55fdc7828e49a30386f1163b058ae14e023e90ef22cf"
+        }
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "cb3b82ba2224d3bea2974aeebf3fd7c8cfe07e79cf7642f3c92ccd8611a93dad"
+      ],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4",
+      "kind": "recommendation",
+      "body": {
+        "id": "recommendation:golden-expired-authority",
+        "title": "Add bounded authority freshness check",
+        "diagnosisInformationGainRank": 1,
+        "diagnosisInformationGain": 2.62,
+        "collapsedSymptoms": [
+          "expired_authority",
+          "missing_revalidation",
+          "terminal_overclaim"
+        ],
+        "antiPatternWarnings": [
+          {
+            "antiPatternId": "anti-pattern:stale-authority-close",
+            "proximity": 0.4,
+            "severity": "high"
+          }
+        ],
+        "emitterReady": false
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [
+        "bbf05b8fe675ca0a1da0029e772e227aebc1fb0acfe2102cfe7bb55e6ceaa857"
+      ],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "3e03d9c21f2778100a400b15606f45eded9255a2b7451f5f55d00c2835799ad3",
+      "kind": "recommendation",
+      "body": {
+        "id": "emission:engineering_spec:8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4",
+        "target": "engineering_spec",
+        "format": "markdown",
+        "content": "# Add bounded authority freshness check\n\n## Engineering Intent\nAddress: expired_authority, terminal_overclaim, missing_revalidation\n\n## Acceptance Checks\n- Recompile the AST after every proposed edit.\n- Keep DLR-O gaps explicit when evidence is unknown.\n- Do not auto-apply generated changes.",
+        "provenance": {
+          "recommendationArtifactId": "8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4",
+          "emitter": "engineering_spec"
+        },
+        "autoApplied": false
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [
+        "8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4"
+      ],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "52561c5ce1dd362643f8d0bbe4f6c35db6eaa59efe505cc96400dfd03acfda84",
+      "kind": "recommendation",
+      "body": {
+        "id": "emission:compliance_checklist:8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4",
+        "target": "compliance_checklist",
+        "format": "markdown",
+        "content": "# Compliance Checklist: Add bounded authority freshness check\n\n## Required Review\n- Confirm control coverage for expired_authority.\n- Confirm control coverage for terminal_overclaim.\n- Confirm control coverage for missing_revalidation.\n\n## Anti-pattern Warnings\n- near anti-pattern: anti-pattern:stale-authority-close\n\nGenerated output is advisory until reviewer approval.",
+        "provenance": {
+          "recommendationArtifactId": "8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4",
+          "emitter": "compliance_checklist"
+        },
+        "autoApplied": false
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [
+        "8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4"
+      ],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "fe5ba85138a17c3f224d1421a416e7005c71de3ed329543e8f1bf5898717d999",
+      "kind": "feedback_event",
+      "body": {
+        "id": "feedback:golden-expired-authority",
+        "recommendationArtifactId": "8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4",
+        "emittedArtifactIds": [
+          "3e03d9c21f2778100a400b15606f45eded9255a2b7451f5f55d00c2835799ad3",
+          "52561c5ce1dd362643f8d0bbe4f6c35db6eaa59efe505cc96400dfd03acfda84"
+        ],
+        "outcome": "accepted",
+        "reviewer": "golden-reviewer",
+        "notes": "expected recommendation addresses expired authority before terminal closure",
+        "observedAt": "2026-06-13T00:00:00.000Z"
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [
+        "3e03d9c21f2778100a400b15606f45eded9255a2b7451f5f55d00c2835799ad3",
+        "52561c5ce1dd362643f8d0bbe4f6c35db6eaa59efe505cc96400dfd03acfda84",
+        "8dff30391ee80e966d2b36b274df945e06d0c1f61c2a4bded9e289a744b967f4"
+      ],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    }
+  ],
+  "feedbackOutcome": "accepted",
+  "adjudicationStatus": "proposed"
+}

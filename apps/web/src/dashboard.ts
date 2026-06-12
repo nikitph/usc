@@ -70,6 +70,13 @@ export interface RecommendationRow {
   readonly warnings: readonly string[];
 }
 
+export interface FeedbackSummaryRow {
+  readonly id: string;
+  readonly recommendationId: string;
+  readonly outcome: "accepted" | "rejected" | "needs_more_evidence" | "succeeded" | "failed";
+  readonly reviewer: string;
+}
+
 export const trapRuns: readonly TrapRun[] = [
   {
     id: "trap-001",
@@ -188,6 +195,15 @@ export const recommendationRows: readonly RecommendationRow[] = [
   },
 ];
 
+export const feedbackSummaryRows: readonly FeedbackSummaryRow[] = [
+  {
+    id: "feedback:golden-expired-authority",
+    recommendationId: "recommendation:bounded-feedback-authority",
+    outcome: "accepted",
+    reviewer: "golden-reviewer",
+  },
+];
+
 export function dashboardMetrics(runs: readonly TrapRun[]): DashboardMetrics {
   return {
     total: runs.length,
@@ -242,4 +258,14 @@ export function topRetrievalRows(rows: readonly RetrievalRow[], limit: number): 
 
 export function orderedRecommendationRows(rows: readonly RecommendationRow[]): readonly RecommendationRow[] {
   return [...rows].sort((left, right) => left.rank - right.rank || left.id.localeCompare(right.id));
+}
+
+export function feedbackOutcomeCounts(rows: readonly FeedbackSummaryRow[]): Readonly<Record<FeedbackSummaryRow["outcome"], number>> {
+  return {
+    accepted: rows.filter((row) => row.outcome === "accepted").length,
+    rejected: rows.filter((row) => row.outcome === "rejected").length,
+    needs_more_evidence: rows.filter((row) => row.outcome === "needs_more_evidence").length,
+    succeeded: rows.filter((row) => row.outcome === "succeeded").length,
+    failed: rows.filter((row) => row.outcome === "failed").length,
+  };
 }

@@ -12,6 +12,7 @@ export {
   EngineeringSpecEmitter,
   createCodegenEmitterRegistry,
 } from "./emitters.ts";
+export { feedbackEventArtifact } from "./feedback.ts";
 export {
   KeywordExtractionBackend,
   TerminalClaimKeywordDetector,
@@ -71,6 +72,10 @@ export type {
   CodegenEmitterRegistry,
   CodegenEmitterTarget,
 } from "./emitters.ts";
+export type {
+  RecommendationFeedbackInput,
+  RecommendationOutcome,
+} from "./feedback.ts";
 export type {
   AstModificationOperation,
   GraftPlanArtifactInput,

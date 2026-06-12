@@ -12,6 +12,7 @@ import {
   createGraftPlanBody,
   createCodegenEmitterRegistry,
   EngineeringSpecEmitter,
+  feedbackEventArtifact,
   graftPlanArtifact,
   materializeObligationLedger,
   obligationLedgerToFacts,
@@ -248,6 +249,23 @@ test("should_reject_duplicate_codegen_emitter_registration", () => {
   registry.register(new EngineeringSpecEmitter());
 
   assert.throws(() => registry.register(new EngineeringSpecEmitter()), RuntimeError);
+});
+
+test("should_capture_recommendation_feedback_event_with_outcome_links", () => {
+  const feedback = feedbackEventArtifact({
+    id: "feedback:golden-incident",
+    recommendationArtifactId: "d".repeat(64),
+    emittedArtifactIds: ["e".repeat(64), "f".repeat(64)],
+    outcome: "accepted",
+    reviewer: "golden-reviewer",
+    notes: "recommendation matched expected expired-authority diagnosis",
+    observedAt: "2026-06-13T00:00:00.000Z",
+    rulebaseHash: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  });
+
+  assert.equal(feedback.kind, "feedback_event");
+  assert.deepEqual(feedback.parents, ["d".repeat(64), "e".repeat(64), "f".repeat(64)]);
+  assert.equal(feedback.body["outcome"], "accepted");
 });
 
 function token(
