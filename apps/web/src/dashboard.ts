@@ -1,5 +1,6 @@
 export type GateVerdict = "allow" | "deny" | "pending" | "manual_review" | "retry" | "hold";
 export type TerminalValidity = "valid" | "invalid" | "unknown";
+export type PatternReviewState = "pending" | "accepted" | "rejected";
 
 export interface TrapRun {
   readonly id: string;
@@ -31,6 +32,21 @@ export interface DashboardMetrics {
   readonly overconfidentClosure: number;
   readonly overcautiousNonClosure: number;
   readonly falseTerminalDetections: number;
+}
+
+export interface PatternReviewRow {
+  readonly id: string;
+  readonly artifactKind: "pattern" | "anti_pattern";
+  readonly name: string;
+  readonly domain: string;
+  readonly state: PatternReviewState;
+  readonly reviewer?: string;
+}
+
+export interface PatternReviewMetrics {
+  readonly pending: number;
+  readonly accepted: number;
+  readonly rejected: number;
 }
 
 export const trapRuns: readonly TrapRun[] = [
@@ -70,6 +86,32 @@ export const trapRuns: readonly TrapRun[] = [
   },
 ];
 
+export const patternReviewRows: readonly PatternReviewRow[] = [
+  {
+    id: "pattern:distributed-systems:circuit-breaker",
+    artifactKind: "pattern",
+    name: "Circuit breaker containment",
+    domain: "distributed-systems",
+    state: "pending",
+  },
+  {
+    id: "pattern:cooperative-bank-compliance:exposure-cutoff",
+    artifactKind: "pattern",
+    name: "Exposure limit cutoff",
+    domain: "cooperative-bank-compliance",
+    state: "accepted",
+    reviewer: "human-reviewer",
+  },
+  {
+    id: "anti-pattern:distributed-systems:stale-cache-contract",
+    artifactKind: "anti_pattern",
+    name: "Stale cache contract",
+    domain: "distributed-systems",
+    state: "rejected",
+    reviewer: "human-reviewer",
+  },
+];
+
 export function dashboardMetrics(runs: readonly TrapRun[]): DashboardMetrics {
   return {
     total: runs.length,
@@ -77,6 +119,14 @@ export function dashboardMetrics(runs: readonly TrapRun[]): DashboardMetrics {
     overconfidentClosure: runs.filter((run) => run.actual.verdict === "allow" && run.expected.verdict !== "allow").length,
     overcautiousNonClosure: runs.filter((run) => run.actual.verdict !== "allow" && run.expected.verdict === "allow").length,
     falseTerminalDetections: runs.filter((run) => run.expected.terminalValidity === "invalid" && run.actual.terminalValidity === "invalid").length,
+  };
+}
+
+export function patternReviewMetrics(rows: readonly PatternReviewRow[]): PatternReviewMetrics {
+  return {
+    pending: rows.filter((row) => row.state === "pending").length,
+    accepted: rows.filter((row) => row.state === "accepted").length,
+    rejected: rows.filter((row) => row.state === "rejected").length,
   };
 }
 
@@ -91,5 +141,16 @@ export function verdictClass(verdict: GateVerdict): string {
     case "retry":
     case "hold":
       return "warn";
+  }
+}
+
+export function reviewStateClass(state: PatternReviewState): string {
+  switch (state) {
+    case "accepted":
+      return "ok";
+    case "pending":
+      return "warn";
+    case "rejected":
+      return "bad";
   }
 }

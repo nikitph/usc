@@ -1,0 +1,14 @@
+{
+  "id": "pattern-009-cooperative-bank-seed",
+  "subsystem": "patterns",
+  "name": "cooperative-bank-compliance-twin-domain-seed",
+  "rationale": "M3-04 draft fixture: cooperative-bank-compliance side of the twin-domain seed bundle contains one positive pattern and one anti-pattern awaiting review.",
+  "operation": "generate twin-domain seed bundle",
+  "expect": {
+    "domain": "cooperative-bank-compliance",
+    "patterns": ["pattern:cooperative-bank-compliance:exposure-cutoff"],
+    "antiPatterns": ["anti-pattern:cooperative-bank-compliance:expired-sanction"],
+    "reviewState": "pending"
+  },
+  "humanAdjudication": "proposed"
+}

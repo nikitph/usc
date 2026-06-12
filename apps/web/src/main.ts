@@ -1,10 +1,21 @@
-import { dashboardMetrics, trapRuns, verdictClass, type LedgerRow, type TrapRun } from "./dashboard.ts";
+import {
+  dashboardMetrics,
+  patternReviewMetrics,
+  patternReviewRows,
+  reviewStateClass,
+  trapRuns,
+  verdictClass,
+  type LedgerRow,
+  type PatternReviewRow,
+  type TrapRun,
+} from "./dashboard.ts";
 import "./styles.css";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 if (app === null) throw new Error("missing #app root");
 
 const metrics = dashboardMetrics(trapRuns);
+const reviewMetrics = patternReviewMetrics(patternReviewRows);
 app.innerHTML = `
   <section class="page-shell">
     <header class="topbar">
@@ -31,6 +42,23 @@ app.innerHTML = `
         </div>
       </section>
       <section class="detail-panel" id="detail" aria-live="polite"></section>
+    </section>
+
+    <section class="review-panel" aria-label="pattern review queue">
+      <div class="review-header">
+        <div>
+          <p class="eyebrow">Pattern Plane</p>
+          <h2>Review Queue</h2>
+        </div>
+        <div class="review-counts">
+          ${reviewMetric("Pending", reviewMetrics.pending)}
+          ${reviewMetric("Accepted", reviewMetrics.accepted)}
+          ${reviewMetric("Rejected", reviewMetrics.rejected)}
+        </div>
+      </div>
+      <div class="review-list">
+        ${patternReviewRows.map(reviewRow).join("")}
+      </div>
     </section>
   </section>
 `;
@@ -64,6 +92,24 @@ function runButton(run: TrapRun): string {
       <strong>${run.name}</strong>
       <em class="${verdictClass(run.actual.verdict)}">${run.actual.verdict}</em>
     </button>
+  `;
+}
+
+function reviewMetric(label: string, value: number): string {
+  return `<span><strong>${value}</strong>${label}</span>`;
+}
+
+function reviewRow(row: PatternReviewRow): string {
+  return `
+    <article class="review-row">
+      <div>
+        <span>${row.artifactKind} / ${row.domain}</span>
+        <strong>${row.name}</strong>
+        <small>${row.id}</small>
+      </div>
+      <em class="${reviewStateClass(row.state)}">${row.state}</em>
+      <small>${row.reviewer ?? "unassigned"}</small>
+    </article>
   `;
 }
 

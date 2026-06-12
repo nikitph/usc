@@ -6,7 +6,9 @@ import {
   ArtifactNotFoundError,
   ArtifactStoreError,
   InMemoryArtifactRepository,
+  InMemoryPatternReviewQueue,
   computeArtifactId,
+  twinDomainSeedBundle,
   type ArtifactEnvelope,
   type ArtifactKind,
 } from "../src/index.ts";
@@ -108,6 +110,62 @@ test("should_reject_pattern_artifact_when_body_misses_schema", async () => {
   await assert.rejects(repository.putArtifact(artifactOf("pattern", { id: "p1" }), "worker"));
 });
 
+test("should_track_pattern_review_queue_lifecycle", async () => {
+  const queue = new InMemoryPatternReviewQueue(fixedClock());
+  const pattern = artifactOf("pattern", patternBody());
+  const antiPattern = artifactOf("anti_pattern", antiPatternBody(pattern.id));
+
+  const pendingPattern = queue.submitCandidate(pattern, "seed-worker");
+  const pendingAntiPattern = queue.submitCandidate(antiPattern, "seed-worker");
+  const acceptedPattern = queue.decide({
+    artifactId: pendingPattern.artifactId,
+    state: "accepted",
+    reviewer: "reviewer",
+    rationale: "schema and motif transfer are plausible",
+  });
+  const rejectedAntiPattern = queue.decide({
+    artifactId: pendingAntiPattern.artifactId,
+    state: "rejected",
+    reviewer: "reviewer",
+    rationale: "duplicate of existing anti-pattern seed",
+  });
+
+  assert.equal(acceptedPattern.state, "accepted");
+  assert.equal(rejectedAntiPattern.state, "rejected");
+  assert.deepEqual(queue.summary(), { pending: 0, accepted: 1, rejected: 1 });
+  assert.deepEqual(
+    queue.events.map((event) => [event.fromState, event.toState, event.actor]),
+    [
+      [null, "pending", "seed-worker"],
+      [null, "pending", "seed-worker"],
+      ["pending", "accepted", "reviewer"],
+      ["pending", "rejected", "reviewer"],
+    ],
+  );
+});
+
+test("should_reject_non_pattern_review_queue_entries", () => {
+  const queue = new InMemoryPatternReviewQueue(fixedClock());
+
+  assert.throws(() => queue.submitCandidate(artifactOf("source", { uri: "file:///tmp/a.txt" }), "worker"), ArtifactStoreError);
+});
+
+test("should_build_twin_domain_seed_bundle_with_reviewable_artifacts", async () => {
+  const repository = new InMemoryArtifactRepository();
+  const queue = new InMemoryPatternReviewQueue(fixedClock());
+  const bundle = twinDomainSeedBundle();
+
+  for (const artifact of bundle.artifacts) {
+    const stored = await repository.putArtifact(artifact, "seed-worker");
+    queue.submitCandidate(stored, "seed-worker");
+  }
+
+  assert.deepEqual(bundle.domains, ["distributed-systems", "cooperative-bank-compliance"]);
+  assert.equal(bundle.artifacts.length, 4);
+  assert.equal(bundle.transferWriteups.length, 2);
+  assert.deepEqual(queue.summary(), { pending: 4, accepted: 0, rejected: 0 });
+});
+
 function artifactOf(
   kind: ArtifactKind,
   body: ArtifactEnvelope["body"],
@@ -165,4 +223,8 @@ function antiPatternBody(patternArtifactId: string): ArtifactEnvelope["body"] {
     },
     severity: "high",
   };
+}
+
+function fixedClock(): () => string {
+  return () => "2026-06-13T00:00:00.000Z";
 }

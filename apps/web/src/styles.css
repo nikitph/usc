@@ -111,7 +111,8 @@ h3 {
 }
 
 .runs-panel,
-.detail-panel {
+.detail-panel,
+.review-panel {
   background: #ffffff;
   border: 1px solid #dbe3dd;
   border-radius: 8px;
@@ -127,6 +128,79 @@ h3 {
   display: grid;
   gap: 10px;
   margin-top: 14px;
+}
+
+.review-panel {
+  margin: 16px auto 0;
+  max-width: 1180px;
+}
+
+.review-header,
+.review-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.review-counts {
+  display: flex;
+  gap: 10px;
+}
+
+.review-counts span {
+  background: #f8faf8;
+  border: 1px solid #dbe3dd;
+  border-radius: 8px;
+  color: #5b6d62;
+  font-size: 12px;
+  min-width: 86px;
+  padding: 8px 10px;
+}
+
+.review-counts strong {
+  color: #18201c;
+  display: block;
+  font-size: 20px;
+}
+
+.review-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.review-row {
+  background: #f8faf8;
+  border: 1px solid #dbe3dd;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.review-row div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.review-row span,
+.review-row small {
+  color: #5b6d62;
+  font-size: 12px;
+}
+
+.review-row strong,
+.review-row small {
+  overflow-wrap: anywhere;
+}
+
+.review-row em {
+  border-radius: 999px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+  padding: 6px 10px;
+  text-transform: uppercase;
 }
 
 .run-button {
@@ -238,9 +312,15 @@ th {
 
   .topbar,
   .detail-header,
-  .summary-row {
+  .summary-row,
+  .review-header,
+  .review-row {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .review-counts {
+    flex-wrap: wrap;
   }
 
   .metrics-grid,

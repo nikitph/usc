@@ -1,0 +1,230 @@
+{
+  "id": "m3-04-twin-domain-seed-bundle",
+  "generatedAt": "2026-06-13T00:00:00.000Z",
+  "domains": [
+    "distributed-systems",
+    "cooperative-bank-compliance"
+  ],
+  "artifacts": [
+    {
+      "id": "7fe0bea70511b677fd697e50f5c2a68048b28c65d53bb969dbd24bebda1693fc",
+      "kind": "pattern",
+      "body": {
+        "id": "pattern:distributed-systems:circuit-breaker",
+        "name": "Circuit breaker containment",
+        "domain": "distributed-systems",
+        "motifSignature": [
+          "boundary",
+          "feedback",
+          "terminal_state"
+        ],
+        "nodes": [
+          {
+            "id": "service",
+            "label": "remote dependency boundary",
+            "motifs": [
+              "boundary"
+            ]
+          },
+          {
+            "id": "breaker",
+            "label": "failure counter and open state",
+            "motifs": [
+              "feedback",
+              "terminal_state"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "service",
+            "to": "breaker",
+            "relation": "requires"
+          }
+        ],
+        "provenance": {
+          "sourceArtifactIds": [
+            "seed:distributed-systems:circuit-breaker"
+          ],
+          "rationale": "M3-04 hand seed for the distributed-systems side of the twin-domain corpus."
+        },
+        "richness": "seed"
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "3b823c6f6132b61bc3e5519d4ce7375340a5173ae5c4fce8e5cd61bb66c778ac",
+      "kind": "pattern",
+      "body": {
+        "id": "pattern:cooperative-bank-compliance:exposure-cutoff",
+        "name": "Exposure limit cutoff",
+        "domain": "cooperative-bank-compliance",
+        "motifSignature": [
+          "boundary",
+          "feedback",
+          "terminal_state"
+        ],
+        "nodes": [
+          {
+            "id": "borrower",
+            "label": "borrower exposure boundary",
+            "motifs": [
+              "boundary"
+            ]
+          },
+          {
+            "id": "cutoff",
+            "label": "limit monitor and sanction hold",
+            "motifs": [
+              "feedback",
+              "terminal_state"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "borrower",
+            "to": "cutoff",
+            "relation": "requires"
+          }
+        ],
+        "provenance": {
+          "sourceArtifactIds": [
+            "seed:cooperative-bank-compliance:exposure-cutoff"
+          ],
+          "rationale": "M3-04 hand seed for the cooperative-bank side of the twin-domain corpus."
+        },
+        "richness": "seed"
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "ebea36c6cdbcbd196e64d66fc45e01cf1be37840fde4b8013ce61f61f20d2413",
+      "kind": "anti_pattern",
+      "body": {
+        "id": "anti-pattern:distributed-systems:stale-cache-contract",
+        "name": "Stale cache contract",
+        "domain": "distributed-systems",
+        "failureMode": "Cached authorization state outlives the freshness contract and closes as if current.",
+        "motifSignature": [
+          "authority",
+          "freshness",
+          "terminal_state"
+        ],
+        "triggeringPatternIds": [
+          "7fe0bea70511b677fd697e50f5c2a68048b28c65d53bb969dbd24bebda1693fc"
+        ],
+        "nodes": [
+          {
+            "id": "cache",
+            "label": "stale cached authority",
+            "motifs": [
+              "authority",
+              "freshness"
+            ]
+          },
+          {
+            "id": "close",
+            "label": "success-shaped terminal close",
+            "motifs": [
+              "terminal_state"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "cache",
+            "to": "close",
+            "relation": "causes"
+          }
+        ],
+        "provenance": {
+          "sourceArtifactIds": [
+            "seed:distributed-systems:stale-cache-contract"
+          ],
+          "rationale": "M3-04 anti-pattern seed for cache freshness transfer review."
+        },
+        "severity": "high"
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "e66f84745b5e6c9bd914404b3902a7f645686d1a0c4db4ed5cdb3119f34294c6",
+      "kind": "anti_pattern",
+      "body": {
+        "id": "anti-pattern:cooperative-bank-compliance:expired-sanction",
+        "name": "Expired sanction handling",
+        "domain": "cooperative-bank-compliance",
+        "failureMode": "Expired approval evidence is treated as live authority during closure.",
+        "motifSignature": [
+          "authority",
+          "freshness",
+          "terminal_state"
+        ],
+        "triggeringPatternIds": [
+          "3b823c6f6132b61bc3e5519d4ce7375340a5173ae5c4fce8e5cd61bb66c778ac"
+        ],
+        "nodes": [
+          {
+            "id": "sanction",
+            "label": "expired sanction evidence",
+            "motifs": [
+              "authority",
+              "freshness"
+            ]
+          },
+          {
+            "id": "close",
+            "label": "loan workflow close",
+            "motifs": [
+              "terminal_state"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "sanction",
+            "to": "close",
+            "relation": "causes"
+          }
+        ],
+        "provenance": {
+          "sourceArtifactIds": [
+            "seed:cooperative-bank-compliance:expired-sanction"
+          ],
+          "rationale": "M3-04 anti-pattern seed for stale-authority transfer review."
+        },
+        "severity": "high"
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    }
+  ],
+  "transferWriteups": [
+    {
+      "id": "transfer:circuit-breaker:exposure-cutoff",
+      "sourcePatternId": "7fe0bea70511b677fd697e50f5c2a68048b28c65d53bb969dbd24bebda1693fc",
+      "targetPatternId": "3b823c6f6132b61bc3e5519d4ce7375340a5173ae5c4fce8e5cd61bb66c778ac",
+      "rationale": "Both patterns gate terminal closure by feedback across a bounded exposure surface.",
+      "status": "seeded_for_review"
+    },
+    {
+      "id": "transfer:stale-cache:expired-sanction",
+      "sourcePatternId": "ebea36c6cdbcbd196e64d66fc45e01cf1be37840fde4b8013ce61f61f20d2413",
+      "targetPatternId": "e66f84745b5e6c9bd914404b3902a7f645686d1a0c4db4ed5cdb3119f34294c6",
+      "rationale": "Both failures convert stale authority evidence into an invalid terminal close.",
+      "status": "seeded_for_review"
+    }
+  ]
+}

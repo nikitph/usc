@@ -1,0 +1,16 @@
+{
+  "id": "pattern-007-review-queue-lifecycle",
+  "subsystem": "patterns",
+  "name": "review-queue-lifecycle",
+  "rationale": "M3-04 draft fixture: pattern candidates enter pending review, then append reviewer decisions as accepted or rejected states without mutating the artifact.",
+  "operation": "submit pattern and anti-pattern candidates, accept one, reject one",
+  "expect": {
+    "summary": {
+      "pending": 0,
+      "accepted": 1,
+      "rejected": 1
+    },
+    "events": ["pending", "pending", "accepted", "rejected"]
+  },
+  "humanAdjudication": "proposed"
+}
