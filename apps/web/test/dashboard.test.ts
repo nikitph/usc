@@ -6,6 +6,8 @@ import {
   patternReviewMetrics,
   patternReviewRows,
   reviewStateClass,
+  retrievalRows,
+  topRetrievalRows,
   trapRuns,
   verdictClass,
   type TrapRun,
@@ -44,4 +46,11 @@ test("should_map_review_state_classes_for_dashboard_badges", () => {
   assert.equal(reviewStateClass("accepted"), "ok");
   assert.equal(reviewStateClass("pending"), "warn");
   assert.equal(reviewStateClass("rejected"), "bad");
+});
+
+test("should_sort_read_only_retrieval_rows_by_score", () => {
+  assert.deepEqual(
+    topRetrievalRows(retrievalRows, 2).map((row) => row.id),
+    ["transfer:circuit-breaker:exposure-cutoff", "transfer:stale-cache:expired-sanction"],
+  );
 });

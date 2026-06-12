@@ -112,7 +112,8 @@ h3 {
 
 .runs-panel,
 .detail-panel,
-.review-panel {
+.review-panel,
+.retrieval-panel {
   background: #ffffff;
   border: 1px solid #dbe3dd;
   border-radius: 8px;
@@ -130,7 +131,8 @@ h3 {
   margin-top: 14px;
 }
 
-.review-panel {
+.review-panel,
+.retrieval-panel {
   margin: 16px auto 0;
   max-width: 1180px;
 }
@@ -201,6 +203,56 @@ h3 {
   font-weight: 800;
   padding: 6px 10px;
   text-transform: uppercase;
+}
+
+.retrieval-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.retrieval-row {
+  align-items: center;
+  background: #f8faf8;
+  border: 1px solid #dbe3dd;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.8fr);
+  padding: 12px;
+}
+
+.retrieval-row div {
+  min-width: 0;
+}
+
+.retrieval-row span,
+.retrieval-row small,
+.retrieval-row dt {
+  color: #5b6d62;
+  font-size: 12px;
+}
+
+.retrieval-row strong,
+.retrieval-row small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.retrieval-row strong {
+  margin: 4px 0;
+}
+
+.retrieval-row dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.retrieval-row dd {
+  font-weight: 800;
+  margin: 2px 0 0;
 }
 
 .run-button {
@@ -324,7 +376,9 @@ th {
   }
 
   .metrics-grid,
-  .workspace {
+  .workspace,
+  .retrieval-row,
+  .retrieval-row dl {
     grid-template-columns: 1fr;
   }
 }

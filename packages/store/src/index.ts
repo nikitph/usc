@@ -6,7 +6,9 @@ export {
 } from "./errors.ts";
 export { computeArtifactId, expectedArtifactId, type ArtifactHashInput } from "./hash.ts";
 export { InMemoryArtifactRepository } from "./memory.ts";
+export { hybridPatternRetrieval, richnessLadders, PatternRetrievalError } from "./pattern-retrieval.ts";
 export { InMemoryPatternReviewQueue } from "./review-queue.ts";
+export { transferWriteupArtifacts } from "./transfer-writeups.ts";
 export { twinDomainSeedBundle } from "./twin-domain-seeds.ts";
 export type {
   ArtifactEnvelope,
@@ -27,6 +29,17 @@ export type {
   PatternReviewSummary,
   ReviewablePatternKind,
 } from "./review-queue.ts";
+export type {
+  HybridRetrievalHit,
+  MotifFacetCoverage,
+  PatternRetrievalCandidate,
+  PatternRetrievalQuery,
+  RichnessLadder,
+  RichnessLadderStep,
+} from "./pattern-retrieval.ts";
+export type {
+  TransferWriteupBody,
+} from "./transfer-writeups.ts";
 export type {
   TwinDomainSeedBundle,
   TwinDomainTransferWriteup,

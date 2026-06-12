@@ -1,0 +1,13 @@
+{
+  "id": "pattern-010-hybrid-retrieval-ranking",
+  "subsystem": "patterns",
+  "name": "hybrid-retrieval-ranking",
+  "rationale": "M3-05 draft fixture: vector prefilter, structural compatibility, and richness coverage rank the exposure-limit transfer above lower-richness candidates while auto-insert remains disabled.",
+  "operation": "rank twin-domain transfer candidates for a boundary-feedback-terminal_state query",
+  "expect": {
+    "topHit": "pattern:cooperative-bank-compliance:exposure-cutoff",
+    "components": ["vectorScore", "structuralScore", "richnessScore"],
+    "autoInsertEnabled": false
+  },
+  "humanAdjudication": "proposed"
+}

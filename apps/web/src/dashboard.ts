@@ -49,6 +49,18 @@ export interface PatternReviewMetrics {
   readonly rejected: number;
 }
 
+export interface RetrievalRow {
+  readonly id: string;
+  readonly source: string;
+  readonly target: string;
+  readonly domain: string;
+  readonly vectorScore: number;
+  readonly structuralScore: number;
+  readonly richnessScore: number;
+  readonly score: number;
+  readonly autoInsertEnabled: false;
+}
+
 export const trapRuns: readonly TrapRun[] = [
   {
     id: "trap-001",
@@ -112,6 +124,42 @@ export const patternReviewRows: readonly PatternReviewRow[] = [
   },
 ];
 
+export const retrievalRows: readonly RetrievalRow[] = [
+  {
+    id: "transfer:circuit-breaker:exposure-cutoff",
+    source: "Circuit breaker containment",
+    target: "Exposure limit cutoff",
+    domain: "cooperative-bank-compliance",
+    vectorScore: 1,
+    structuralScore: 1,
+    richnessScore: 1,
+    score: 1,
+    autoInsertEnabled: false,
+  },
+  {
+    id: "transfer:stale-cache:expired-sanction",
+    source: "Stale cache contract",
+    target: "Expired sanction handling",
+    domain: "cooperative-bank-compliance",
+    vectorScore: 1,
+    structuralScore: 1,
+    richnessScore: 0.5,
+    score: 0.925,
+    autoInsertEnabled: false,
+  },
+  {
+    id: "transfer:idempotency-key:duplicate-entry",
+    source: "Idempotency key suppression",
+    target: "Duplicate-entry suppression in CBS",
+    domain: "cooperative-bank-compliance",
+    vectorScore: 0.816497,
+    structuralScore: 0.5,
+    richnessScore: 0.5,
+    score: 0.642424,
+    autoInsertEnabled: false,
+  },
+];
+
 export function dashboardMetrics(runs: readonly TrapRun[]): DashboardMetrics {
   return {
     total: runs.length,
@@ -153,4 +201,13 @@ export function reviewStateClass(state: PatternReviewState): string {
     case "rejected":
       return "bad";
   }
+}
+
+export function topRetrievalRows(rows: readonly RetrievalRow[], limit: number): readonly RetrievalRow[] {
+  return [...rows]
+    .sort((left, right) => {
+      const score = right.score - left.score;
+      return score === 0 ? left.id.localeCompare(right.id) : score;
+    })
+    .slice(0, limit);
 }

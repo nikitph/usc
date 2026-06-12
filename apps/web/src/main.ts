@@ -3,10 +3,13 @@ import {
   patternReviewMetrics,
   patternReviewRows,
   reviewStateClass,
+  retrievalRows,
+  topRetrievalRows,
   trapRuns,
   verdictClass,
   type LedgerRow,
   type PatternReviewRow,
+  type RetrievalRow,
   type TrapRun,
 } from "./dashboard.ts";
 import "./styles.css";
@@ -60,6 +63,19 @@ app.innerHTML = `
         ${patternReviewRows.map(reviewRow).join("")}
       </div>
     </section>
+
+    <section class="retrieval-panel" aria-label="hybrid retrieval">
+      <div class="review-header">
+        <div>
+          <p class="eyebrow">Hybrid Retrieval</p>
+          <h2>Read-only Transfer Candidates</h2>
+        </div>
+        <div class="status-pill">auto-insert disabled</div>
+      </div>
+      <div class="retrieval-list">
+        ${topRetrievalRows(retrievalRows, 3).map(retrievalRow).join("")}
+      </div>
+    </section>
   </section>
 `;
 
@@ -109,6 +125,24 @@ function reviewRow(row: PatternReviewRow): string {
       </div>
       <em class="${reviewStateClass(row.state)}">${row.state}</em>
       <small>${row.reviewer ?? "unassigned"}</small>
+    </article>
+  `;
+}
+
+function retrievalRow(row: RetrievalRow): string {
+  return `
+    <article class="retrieval-row">
+      <div>
+        <span>${row.domain}</span>
+        <strong>${row.source} -> ${row.target}</strong>
+        <small>${row.id}</small>
+      </div>
+      <dl>
+        <div><dt>vector</dt><dd>${row.vectorScore}</dd></div>
+        <div><dt>structural</dt><dd>${row.structuralScore}</dd></div>
+        <div><dt>richness</dt><dd>${row.richnessScore}</dd></div>
+        <div><dt>score</dt><dd>${row.score}</dd></div>
+      </dl>
     </article>
   `;
 }

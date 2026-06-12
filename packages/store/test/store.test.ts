@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
+import { PatternBodySchema } from "@usc/shared/generated";
+
 import {
   ArtifactHashMismatchError,
   ArtifactNotFoundError,
@@ -8,9 +10,13 @@ import {
   InMemoryArtifactRepository,
   InMemoryPatternReviewQueue,
   computeArtifactId,
+  hybridPatternRetrieval,
+  richnessLadders,
+  transferWriteupArtifacts,
   twinDomainSeedBundle,
   type ArtifactEnvelope,
   type ArtifactKind,
+  type PatternRetrievalCandidate,
 } from "../src/index.ts";
 
 const rulebaseHash = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
@@ -166,6 +172,67 @@ test("should_build_twin_domain_seed_bundle_with_reviewable_artifacts", async () 
   assert.deepEqual(queue.summary(), { pending: 4, accepted: 0, rejected: 0 });
 });
 
+test("should_rank_hybrid_retrieval_by_vector_structure_and_richness", () => {
+  const bundle = twinDomainSeedBundle();
+  const circuitBreaker = bundle.artifacts[0] as ArtifactEnvelope;
+  const exposureCutoff = bundle.artifacts[1] as ArtifactEnvelope;
+  const staleCache = bundle.artifacts[2] as ArtifactEnvelope;
+  const candidates = [
+    retrievalCandidate(circuitBreaker, ["aggregation", "constraint_bounds"]),
+    retrievalCandidate(exposureCutoff, ["aggregation", "constraint_bounds", "validation_pipeline"]),
+    retrievalCandidate(staleCache, ["latency"]),
+  ];
+
+  const hits = hybridPatternRetrieval(candidates, {
+    motifWeights: { boundary: 1, feedback: 1, terminal_state: 1 },
+    targetPattern: PatternBodySchema.parse(circuitBreaker.body),
+    requiredFacets: [{ motif: "feedback", facets: ["validation_pipeline"] }],
+    limit: 2,
+  });
+
+  assert.deepEqual(
+    hits.map((hit) => hit.bodyId),
+    ["pattern:cooperative-bank-compliance:exposure-cutoff", "pattern:distributed-systems:circuit-breaker"],
+  );
+  assert.equal(hits[0]?.autoInsertEnabled, false);
+});
+
+test("should_compute_richness_ladder_from_strict_facet_subsets", () => {
+  const bundle = twinDomainSeedBundle();
+  const circuitBreaker = bundle.artifacts[0] as ArtifactEnvelope;
+  const richerCircuitBreaker = artifactOf("pattern", {
+    ...circuitBreaker.body,
+    id: "pattern:distributed-systems:circuit-breaker-rich",
+    richness: "reviewed",
+  });
+
+  const ladders = richnessLadders([
+    retrievalCandidate(circuitBreaker, ["aggregation"]),
+    retrievalCandidate(richerCircuitBreaker, ["aggregation", "validation_pipeline"]),
+  ]);
+
+  assert.equal(ladders.length, 1);
+  assert.deepEqual(
+    ladders[0]?.steps.map((step) => [step.bodyId, step.facetCount]),
+    [
+      ["pattern:distributed-systems:circuit-breaker", 1],
+      ["pattern:distributed-systems:circuit-breaker-rich", 2],
+    ],
+  );
+});
+
+test("should_generate_five_transfer_writeup_artifacts_for_expert_review", () => {
+  const writeups = transferWriteupArtifacts();
+
+  assert.equal(writeups.length, 5);
+  assert.deepEqual(
+    writeups.map((writeup) => writeup.kind),
+    ["transfer_evaluation", "transfer_evaluation", "transfer_evaluation", "transfer_evaluation", "transfer_evaluation"],
+  );
+  assert.equal(writeups.every((writeup) => writeup.body["autoInsertEnabled"] === false), true);
+  assert.equal(writeups.every((writeup) => writeup.body["reviewState"] === "expert_review_pending"), true);
+});
+
 function artifactOf(
   kind: ArtifactKind,
   body: ArtifactEnvelope["body"],
@@ -227,4 +294,11 @@ function antiPatternBody(patternArtifactId: string): ArtifactEnvelope["body"] {
 
 function fixedClock(): () => string {
   return () => "2026-06-13T00:00:00.000Z";
+}
+
+function retrievalCandidate(artifact: ArtifactEnvelope, feedbackFacets: readonly string[]): PatternRetrievalCandidate {
+  return {
+    artifact,
+    facetCoverage: [{ motif: "feedback", facets: feedbackFacets }],
+  };
 }

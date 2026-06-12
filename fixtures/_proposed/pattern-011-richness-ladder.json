@@ -1,0 +1,21 @@
+{
+  "id": "pattern-011-richness-ladder",
+  "subsystem": "patterns",
+  "name": "richness-ladder",
+  "rationale": "M3-05 draft fixture: patterns with the same structural template form a ladder only when one facet set is a strict subset of another.",
+  "operation": "compute richness ladder from two circuit-breaker variants",
+  "expect": {
+    "steps": [
+      {
+        "bodyId": "pattern:distributed-systems:circuit-breaker",
+        "facetCount": 1
+      },
+      {
+        "bodyId": "pattern:distributed-systems:circuit-breaker-rich",
+        "facetCount": 2
+      }
+    ],
+    "assertionMode": "computed"
+  },
+  "humanAdjudication": "proposed"
+}

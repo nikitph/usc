@@ -1,0 +1,116 @@
+{
+  "id": "m3-05-transfer-writeups",
+  "generatedAt": "2026-06-13T00:00:00.000Z",
+  "artifacts": [
+    {
+      "id": "856f2819eb1507d30ae066c3c9002e4d57c370d7eadae854d424a6bce0923f9d",
+      "kind": "transfer_evaluation",
+      "body": {
+        "id": "transfer:circuit-breaker:exposure-cutoff",
+        "sourceDomain": "distributed-systems",
+        "targetDomain": "cooperative-bank-compliance",
+        "sourcePattern": "Circuit breaker containment",
+        "targetPattern": "Exposure limit cutoff",
+        "structuralClaim": "Both stop terminal closure when feedback crosses a bounded risk threshold.",
+        "evidenceNeeded": [
+          "expert confirms threshold semantics",
+          "domain owner confirms terminal hold semantics"
+        ],
+        "reviewState": "expert_review_pending",
+        "autoInsertEnabled": false
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "e7405d6ca84686cb6b4db0d8b9ed3f839c40453a839376a83f573843e78f9d77",
+      "kind": "transfer_evaluation",
+      "body": {
+        "id": "transfer:stale-cache:expired-sanction",
+        "sourceDomain": "distributed-systems",
+        "targetDomain": "cooperative-bank-compliance",
+        "sourcePattern": "Stale cache contract",
+        "targetPattern": "Expired sanction handling",
+        "structuralClaim": "Both failures treat stale authority evidence as if it were current.",
+        "evidenceNeeded": [
+          "expert confirms authority freshness bar",
+          "reviewer checks anti-pattern severity"
+        ],
+        "reviewState": "expert_review_pending",
+        "autoInsertEnabled": false
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "a6346b01f57576f0dd88071ccc8653134c465cf76376757e893aff34d41ed8a0",
+      "kind": "transfer_evaluation",
+      "body": {
+        "id": "transfer:reconciliation-job:interbranch-dccb",
+        "sourceDomain": "distributed-systems",
+        "targetDomain": "cooperative-bank-compliance",
+        "sourcePattern": "Replica reconciliation job",
+        "targetPattern": "Inter-branch DCCB reconciliation",
+        "structuralClaim": "Both converge divergent ledgers under an authority-backed resolution procedure.",
+        "evidenceNeeded": [
+          "expert verifies reconciliation authority",
+          "audit trail requirements mapped"
+        ],
+        "reviewState": "expert_review_pending",
+        "autoInsertEnabled": false
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "6da0176b75fadff14bd3d08db79ecd5e0833878359c5ceb66f486a83542762ef",
+      "kind": "transfer_evaluation",
+      "body": {
+        "id": "transfer:idempotency-key:duplicate-entry",
+        "sourceDomain": "distributed-systems",
+        "targetDomain": "cooperative-bank-compliance",
+        "sourcePattern": "Idempotency key suppression",
+        "targetPattern": "Duplicate-entry suppression in CBS",
+        "structuralClaim": "Both bind repeated requests to a stable identity before mutating state.",
+        "evidenceNeeded": [
+          "expert confirms duplicate detection key",
+          "operator validates retry boundary"
+        ],
+        "reviewState": "expert_review_pending",
+        "autoInsertEnabled": false
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    },
+    {
+      "id": "daf1f7135cad1594fd398af54e265d4c02efef35a957e73a29210bbe9bad124f",
+      "kind": "transfer_evaluation",
+      "body": {
+        "id": "transfer:canary-deploy:pilot-branch-rollout",
+        "sourceDomain": "distributed-systems",
+        "targetDomain": "cooperative-bank-compliance",
+        "sourcePattern": "Canary deployment",
+        "targetPattern": "Pilot branch policy rollout",
+        "structuralClaim": "Both constrain blast radius while feedback validates the rollout before expansion.",
+        "evidenceNeeded": [
+          "expert confirms pilot branch scope",
+          "reviewer maps feedback escalation path"
+        ],
+        "reviewState": "expert_review_pending",
+        "autoInsertEnabled": false
+      },
+      "rulebaseHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "parents": [],
+      "tags": [],
+      "createdAt": "2026-06-13T00:00:00.000Z"
+    }
+  ]
+}
