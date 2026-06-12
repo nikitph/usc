@@ -93,6 +93,21 @@ test("should_expose_typed_placeholder_for_pgvector_search", async () => {
   await assert.rejects(repository.nearestVectors([0, 1], 1), ArtifactStoreError);
 });
 
+test("should_validate_pattern_and_anti_pattern_bodies_by_kind", async () => {
+  const repository = new InMemoryArtifactRepository();
+  const pattern = await repository.putArtifact(artifactOf("pattern", patternBody()), "worker");
+  const antiPattern = await repository.putArtifact(artifactOf("anti_pattern", antiPatternBody(pattern.id)), "worker");
+
+  assert.equal(pattern.kind, "pattern");
+  assert.equal(antiPattern.kind, "anti_pattern");
+});
+
+test("should_reject_pattern_artifact_when_body_misses_schema", async () => {
+  const repository = new InMemoryArtifactRepository();
+
+  await assert.rejects(repository.putArtifact(artifactOf("pattern", { id: "p1" }), "worker"));
+});
+
 function artifactOf(
   kind: ArtifactKind,
   body: ArtifactEnvelope["body"],
@@ -110,5 +125,44 @@ function artifactOf(
     ...draft,
     tags: [...tags],
     createdAt: "2026-06-13T00:00:00.000Z",
+  };
+}
+
+function patternBody(): ArtifactEnvelope["body"] {
+  return {
+    id: "pattern:boundary-authority",
+    name: "Boundary-authority closure",
+    domain: "agent-trace",
+    motifSignature: ["boundary", "authority", "terminal_state"],
+    nodes: [
+      { id: "n1", label: "scope boundary", motifs: ["boundary"] },
+      { id: "n2", label: "approval", motifs: ["authority"] },
+    ],
+    edges: [{ from: "n1", to: "n2", relation: "requires" }],
+    provenance: {
+      sourceArtifactIds: ["source:golden-incident"],
+      rationale: "seeded from adjudicated expired-authority trap",
+    },
+    richness: "seed",
+  };
+}
+
+function antiPatternBody(patternArtifactId: string): ArtifactEnvelope["body"] {
+  return {
+    id: "anti-pattern:stale-authority-close",
+    name: "Stale authority close",
+    domain: "agent-trace",
+    failureMode: "Terminal claim closes after authority evidence expires.",
+    motifSignature: ["authority", "freshness", "terminal_state"],
+    triggeringPatternIds: [patternArtifactId],
+    nodes: [
+      { id: "n1", label: "expired approval", motifs: ["authority", "freshness"] },
+    ],
+    edges: [],
+    provenance: {
+      sourceArtifactIds: ["source:golden-incident"],
+      rationale: "seeded from false-terminal diagnosis",
+    },
+    severity: "high",
   };
 }

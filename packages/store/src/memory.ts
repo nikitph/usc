@@ -1,4 +1,4 @@
-import { ArtifactSchema } from "@usc/shared/generated";
+import { AntiPatternBodySchema, ArtifactSchema, PatternBodySchema } from "@usc/shared/generated";
 import { canonicalJson } from "@usc/shared/hashing";
 
 import {
@@ -37,6 +37,7 @@ export class InMemoryArtifactRepository implements ArtifactRepository {
       throw new ArtifactStoreError("createdBy is required");
     }
     const parsed = ArtifactSchema.parse(envelope);
+    validateArtifactBody(parsed);
     const expected = expectedArtifactId(parsed);
     if (parsed.id !== expected) {
       throw new ArtifactHashMismatchError(expected, parsed.id);
@@ -155,6 +156,19 @@ export class InMemoryArtifactRepository implements ArtifactRepository {
 function compareArtifacts(left: ArtifactEnvelope, right: ArtifactEnvelope): number {
   const created = left.createdAt.localeCompare(right.createdAt);
   return created === 0 ? left.id.localeCompare(right.id) : created;
+}
+
+function validateArtifactBody(artifact: ArtifactEnvelope): void {
+  switch (artifact.kind) {
+    case "pattern":
+      PatternBodySchema.parse(artifact.body);
+      return;
+    case "anti_pattern":
+      AntiPatternBodySchema.parse(artifact.body);
+      return;
+    default:
+      return;
+  }
 }
 
 function cloneArtifact(artifact: ArtifactEnvelope): ArtifactEnvelope {

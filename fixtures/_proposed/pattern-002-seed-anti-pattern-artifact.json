@@ -1,0 +1,25 @@
+{
+  "id": "pattern-002-seed-anti-pattern-artifact",
+  "subsystem": "patterns",
+  "name": "seed-anti-pattern-artifact-body",
+  "rationale": "M3-01 draft fixture: anti-pattern artifact bodies name a failure mode, triggering patterns, motif graph, provenance, and severity.",
+  "artifactKind": "anti_pattern",
+  "body": {
+    "id": "anti-pattern:stale-authority-close",
+    "name": "Stale authority close",
+    "domain": "agent-trace",
+    "failureMode": "Terminal claim closes after authority evidence expires.",
+    "motifSignature": ["authority", "freshness", "terminal_state"],
+    "triggeringPatternIds": ["pattern:boundary-authority"],
+    "nodes": [
+      { "id": "n1", "label": "expired approval", "motifs": ["authority", "freshness"] }
+    ],
+    "edges": [],
+    "provenance": {
+      "sourceArtifactIds": ["source:golden-incident"],
+      "rationale": "seeded from false-terminal diagnosis"
+    },
+    "severity": "high"
+  },
+  "humanAdjudication": "proposed"
+}

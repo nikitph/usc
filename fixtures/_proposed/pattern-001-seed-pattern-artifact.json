@@ -1,0 +1,26 @@
+{
+  "id": "pattern-001-seed-pattern-artifact",
+  "subsystem": "patterns",
+  "name": "seed-pattern-artifact-body",
+  "rationale": "M3-01 draft fixture: pattern artifact bodies carry domain, motif signature, graph nodes/edges, provenance, and richness ladder state.",
+  "artifactKind": "pattern",
+  "body": {
+    "id": "pattern:boundary-authority",
+    "name": "Boundary-authority closure",
+    "domain": "agent-trace",
+    "motifSignature": ["boundary", "authority", "terminal_state"],
+    "nodes": [
+      { "id": "n1", "label": "scope boundary", "motifs": ["boundary"] },
+      { "id": "n2", "label": "approval", "motifs": ["authority"] }
+    ],
+    "edges": [
+      { "from": "n1", "to": "n2", "relation": "requires" }
+    ],
+    "provenance": {
+      "sourceArtifactIds": ["source:golden-incident"],
+      "rationale": "seeded from adjudicated expired-authority trap"
+    },
+    "richness": "seed"
+  },
+  "humanAdjudication": "proposed"
+}
