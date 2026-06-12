@@ -30,6 +30,7 @@ export interface DashboardMetrics {
   readonly passing: number;
   readonly overconfidentClosure: number;
   readonly overcautiousNonClosure: number;
+  readonly falseTerminalDetections: number;
 }
 
 export const trapRuns: readonly TrapRun[] = [
@@ -75,6 +76,7 @@ export function dashboardMetrics(runs: readonly TrapRun[]): DashboardMetrics {
     passing: runs.filter((run) => run.actual.verdict === run.expected.verdict && run.actual.terminalValidity === run.expected.terminalValidity).length,
     overconfidentClosure: runs.filter((run) => run.actual.verdict === "allow" && run.expected.verdict !== "allow").length,
     overcautiousNonClosure: runs.filter((run) => run.actual.verdict !== "allow" && run.expected.verdict === "allow").length,
+    falseTerminalDetections: runs.filter((run) => run.expected.terminalValidity === "invalid" && run.actual.terminalValidity === "invalid").length,
   };
 }
 

@@ -1,0 +1,103 @@
+{
+  "incidentId": "golden-incident-expired-authority",
+  "request": {
+    "agentId": "incident-smoke",
+    "action": {
+      "name": "report_completion",
+      "target": "prod-deploy-441",
+      "declaredGoal": "close deployment ticket"
+    },
+    "context": [
+      {
+        "text": "Deploy pipeline finished: SUCCESS. All 212 tests green. Marking ticket done.",
+        "ts": "2026-06-12T10:00:00Z"
+      },
+      {
+        "text": "Change approval CAB-9913 granted, valid until 2026-06-12T09:00:00Z",
+        "ts": "2026-06-11T17:00:00Z"
+      },
+      {
+        "text": "Incident note: closure was reported before authority evidence was revalidated.",
+        "ts": "2026-06-12T10:05:00Z"
+      }
+    ]
+  },
+  "response": {
+    "correlationId": "corr_235fb766627a49ba",
+    "verdict": "deny",
+    "terminalValidity": "invalid",
+    "verdictArtifactId": "cb3b82ba2224d3bea2974aeebf3fd7c8cfe07e79cf7642f3c92ccd8611a93dad",
+    "mode": "research",
+    "actionHash": "235fb766627a49ba4320e67f46120a2fb98117a52d94bd00936e7127fadca0c2",
+    "rationale": [
+      "authority obligation violated",
+      "approval evidence expired before execution"
+    ],
+    "gaps": []
+  },
+  "falseTerminalDetected": true,
+  "hypothesisView": [
+    {
+      "id": "h-terminal-success",
+      "status": "retracted",
+      "summary": "surface logs claimed deployment completion was safe",
+      "supports": [
+        "Deploy pipeline finished: SUCCESS",
+        "Marking ticket done"
+      ]
+    },
+    {
+      "id": "h-expired-authority",
+      "status": "supported",
+      "summary": "authority evidence expired before completion was reported",
+      "supports": [
+        "CAB-9913 valid until 2026-06-12T09:00:00Z",
+        "completion at 2026-06-12T10:00:00Z"
+      ]
+    }
+  ],
+  "derivationDag": [
+    {
+      "id": "cb3b82ba2224d3bea2974aeebf3fd7c8cfe07e79cf7642f3c92ccd8611a93dad",
+      "kind": "verdict",
+      "parents": [
+        "6faf7c3bf59e96f9c304764b382164569dcbd6a20ec6ae3945dda88ea3001916"
+      ],
+      "tags": [
+        "experimental"
+      ]
+    },
+    {
+      "id": "6faf7c3bf59e96f9c304764b382164569dcbd6a20ec6ae3945dda88ea3001916",
+      "kind": "token_stream",
+      "parents": [
+        "958f63bd2955b2d524c19cbc37d273766f8bc69cba66a82988d391731d141278"
+      ],
+      "tags": [
+        "experimental"
+      ],
+      "extractorVersion": "keyword-test-double-v1"
+    },
+    {
+      "id": "958f63bd2955b2d524c19cbc37d273766f8bc69cba66a82988d391731d141278",
+      "kind": "source",
+      "parents": [
+        "f5c27ec8477499ad5fc8417c61935bf1243152d8fc8f8f9e53b5cae03077edc8"
+      ],
+      "tags": [
+        "experimental"
+      ],
+      "extractorVersion": "keyword-test-double-v1"
+    },
+    {
+      "id": "f5c27ec8477499ad5fc8417c61935bf1243152d8fc8f8f9e53b5cae03077edc8",
+      "kind": "source",
+      "parents": [],
+      "tags": [
+        "experimental"
+      ]
+    }
+  ],
+  "productionWouldBeInvalid": true,
+  "adjudicationStatus": "proposed"
+}

@@ -10,6 +10,7 @@ test("should_reflect_current_trap_fixture_results", () => {
   assert.equal(metrics.passing, 2);
   assert.equal(metrics.overconfidentClosure, 0);
   assert.equal(metrics.overcautiousNonClosure, 0);
+  assert.equal(metrics.falseTerminalDetections, 1);
 });
 
 test("should_count_overconfident_closure_when_gate_allows_unsafe_trap", () => {

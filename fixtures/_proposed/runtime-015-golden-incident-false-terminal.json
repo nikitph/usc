@@ -1,0 +1,15 @@
+{
+  "id": "runtime-015-golden-incident-false-terminal",
+  "subsystem": "runtime",
+  "name": "golden-incident-false-terminal-detection",
+  "rationale": "M2-04 draft fixture: a success-shaped deployment log is diagnosed as a false terminal because authority evidence expired before closure.",
+  "operation": "runIncidentWorkflow(goldenIncidentRequest)",
+  "expect": {
+    "terminalValidity": "invalid",
+    "verdict": "deny",
+    "falseTerminalDetected": true,
+    "retractedHypothesis": "h-terminal-success",
+    "productionWouldBeInvalid": true
+  },
+  "humanAdjudication": "proposed"
+}

@@ -20,6 +20,7 @@ app.innerHTML = `
       ${metricTile("Passing", String(metrics.passing), "current runner")}
       ${metricTile("Overconfident Closure", String(metrics.overconfidentClosure), "allow when unsafe")}
       ${metricTile("Over-cautious Non-closure", String(metrics.overcautiousNonClosure), "block when valid")}
+      ${metricTile("False-terminal Detections", String(metrics.falseTerminalDetections), "invalid closure caught")}
     </section>
 
     <section class="workspace">
