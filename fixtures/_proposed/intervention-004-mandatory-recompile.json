@@ -1,0 +1,11 @@
+{
+  "id": "intervention-004-mandatory-recompile",
+  "subsystem": "intervention",
+  "name": "mandatory-recompile",
+  "rationale": "M4-02 draft fixture: graft plans without before and after fact hashes are rejected because every AST edit must be recompiled before artifact creation.",
+  "operation": "validate graft plan body with a missing afterFactsHash",
+  "expect": {
+    "error": "graft_plan requires before and after fact hashes"
+  },
+  "humanAdjudication": "proposed"
+}

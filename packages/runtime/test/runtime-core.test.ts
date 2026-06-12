@@ -1,17 +1,23 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { evaluate, loadRulebase, type Fact, type MotifName } from "@usc/kernel";
+import { evaluate, graftCheck, loadRulebase, type Fact, type MotifName } from "@usc/kernel";
 import type { MotifToken } from "@usc/shared/generated";
 
 import {
+  applyAstOperations,
   buildProcessIrLite,
   classifyEventText,
+  createGraftPlanBody,
+  graftPlanArtifact,
   materializeObligationLedger,
   obligationLedgerToFacts,
   parseMotifTokens,
   processIrTerminalClaimFacts,
   runtimeFactsForKernel,
+  validateMandatoryRecompile,
+  RuntimeError,
+  type RuntimeAstNode,
 } from "../src/index.ts";
 
 const sourceArtifactId = "source-trace";
@@ -86,6 +92,80 @@ test("should_emit_structured_facts_consumable_by_kernel_evaluate", () => {
   assert.equal(obligationLedgerToFacts(ledger).length, 1);
 });
 
+test("should_apply_ast_operations_and_recompile_graft_plan_body", () => {
+  const baseAst = runtimeAst();
+  const graftCheckResult = graftCheck({
+    facts: [
+      { fact: "node", args: ["target"] },
+      { fact: "provided_in_scope_chain", args: ["target", "authority"] },
+    ],
+    requirements: [{ id: "requires-authority", patternNodeId: "pattern-close", motif: "authority" }],
+    candidates: [{ patternNodeId: "pattern-close", targetNodeId: "target" }],
+  });
+
+  const body = createGraftPlanBody({
+    id: "graft-plan:test",
+    baseAst,
+    graftCheck: graftCheckResult,
+    operations: [{ op: "add_claim", nodeId: "target", motif: "authority" }],
+  });
+  const modifiedAst = applyAstOperations(baseAst, body.operations);
+
+  assert.equal(body.status, "graftable");
+  assert.equal(body.recompile.status, "passed");
+  assert.notEqual(body.recompile.beforeFactsHash, body.recompile.afterFactsHash);
+  assert.deepEqual(modifiedAst.claims, ["authority", "boundary"]);
+});
+
+test("should_build_graft_plan_artifact_with_required_parent_links", () => {
+  const body = createGraftPlanBody({
+    id: "graft-plan:test",
+    baseAst: runtimeAst(),
+    graftCheck: graftCheck({
+      facts: [
+        { fact: "node", args: ["target"] },
+        { fact: "provided_in_scope_chain", args: ["target", "authority"] },
+      ],
+      requirements: [{ id: "requires-authority", patternNodeId: "pattern-close", motif: "authority" }],
+      candidates: [{ patternNodeId: "pattern-close", targetNodeId: "target" }],
+    }),
+    operations: [{ op: "add_claim", nodeId: "target", motif: "authority" }],
+  });
+
+  const artifact = graftPlanArtifact({
+    body,
+    patternArtifactId: "b".repeat(64),
+    targetArtifactId: "a".repeat(64),
+    verdictArtifactId: "c".repeat(64),
+    rulebaseHash: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    createdAt: "2026-06-13T00:00:00.000Z",
+  });
+
+  assert.equal(artifact.kind, "graft_plan");
+  assert.deepEqual(artifact.parents, ["a".repeat(64), "b".repeat(64), "c".repeat(64)]);
+});
+
+test("should_reject_graft_plan_when_recompile_hash_is_missing", () => {
+  const body = createGraftPlanBody({
+    id: "graft-plan:test",
+    baseAst: runtimeAst(),
+    graftCheck: graftCheck({
+      facts: [
+        { fact: "node", args: ["target"] },
+        { fact: "provided_in_scope_chain", args: ["target", "authority"] },
+      ],
+      requirements: [{ id: "requires-authority", patternNodeId: "pattern-close", motif: "authority" }],
+      candidates: [{ patternNodeId: "pattern-close", targetNodeId: "target" }],
+    }),
+    operations: [{ op: "add_claim", nodeId: "target", motif: "authority" }],
+  });
+
+  assert.throws(
+    () => validateMandatoryRecompile({ ...body, recompile: { ...body.recompile, afterFactsHash: "" } }),
+    RuntimeError,
+  );
+});
+
 function token(
   id: string,
   motif: MotifName,
@@ -117,4 +197,13 @@ function flattenFacts(parts: {
   readonly obligationFacts: readonly Fact[];
 }): readonly Fact[] {
   return [...parts.astFacts, ...parts.terminalClaimFacts, ...parts.obligationFacts];
+}
+
+function runtimeAst(): RuntimeAstNode {
+  return {
+    id: "target",
+    claims: ["boundary"],
+    sourceTokenIds: ["boundary-token"],
+    children: [],
+  };
 }

@@ -14,6 +14,12 @@ export {
   runLexer,
 } from "./lexer.ts";
 export {
+  applyAstOperations,
+  createGraftPlanBody,
+  graftPlanArtifact,
+  validateMandatoryRecompile,
+} from "./graft-plan.ts";
+export {
   EVENT_TYPES_WITH_OBSERVATION,
   buildProcessIrLite,
   classifyEventText,
@@ -50,3 +56,9 @@ export type {
   RawExtraction,
   TerminalClaimDetector,
 } from "./types.ts";
+export type {
+  AstModificationOperation,
+  GraftPlanArtifactInput,
+  GraftPlanBody,
+  GraftPlanDraft,
+} from "./graft-plan.ts";

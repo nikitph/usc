@@ -1,0 +1,13 @@
+{
+  "id": "intervention-003-graft-plan-artifact",
+  "subsystem": "intervention",
+  "name": "graft-plan-artifact",
+  "rationale": "M4-02 draft fixture: a graft plan artifact records the graft check result, AST operations, recompile hashes, and parent links to pattern, target, and verdict artifacts.",
+  "operation": "build graft_plan artifact after adding an authority claim to the target AST",
+  "expect": {
+    "kind": "graft_plan",
+    "parents": ["patternArtifactId", "targetArtifactId", "verdictArtifactId"],
+    "recompile": "passed"
+  },
+  "humanAdjudication": "proposed"
+}
