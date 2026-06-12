@@ -1,0 +1,41 @@
+{
+  "accuracy": 1.0,
+  "average_fidelity": 0.441667,
+  "case_count": 3,
+  "confusion_pairs": {
+    "authority->feedback": 1,
+    "authority->freshness": 1,
+    "boundary->feedback": 1
+  },
+  "scores": [
+    {
+      "band": "candidate",
+      "edge_f1": 1.0,
+      "fidelity": 1.0,
+      "gold_id": "gold-boundary-authority",
+      "motif_f1": 1.0,
+      "pattern_id": "predicted-perfect"
+    },
+    {
+      "band": "review",
+      "edge_f1": 0.0,
+      "fidelity": 0.325,
+      "gold_id": "gold-boundary-authority",
+      "motif_f1": 0.5,
+      "pattern_id": "predicted-partial"
+    },
+    {
+      "band": "reject",
+      "edge_f1": 0.0,
+      "fidelity": 0.0,
+      "gold_id": "gold-boundary-authority",
+      "motif_f1": 0.0,
+      "pattern_id": "predicted-reject"
+    }
+  ],
+  "threshold_config": {
+    "autoInsertEnabled": false,
+    "candidateMin": 0.82,
+    "reviewMin": 0.3
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "pattern-006-fidelity-confusion-pairs",
+  "subsystem": "patterns",
+  "name": "fidelity-confusion-pairs",
+  "rationale": "M3-03 draft fixture: when predicted motif signature substitutes freshness for authority, calibration records an authority->freshness confusion pair.",
+  "operation": "score partial predicted pattern against boundary-authority gold pattern",
+  "expect": {
+    "band": "review",
+    "confusionPairs": {
+      "authority->freshness": 1
+    },
+    "autoInsertEnabled": false
+  },
+  "humanAdjudication": "proposed"
+}

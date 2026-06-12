@@ -1,0 +1,13 @@
+{
+  "id": "pattern-005-fidelity-calibration-gold",
+  "subsystem": "patterns",
+  "name": "fidelity-calibration-gold-set",
+  "rationale": "M3-03 draft fixture: identical motif graph transfer scores as a candidate while auto-insert remains disabled.",
+  "operation": "score predicted boundary-authority pattern against isomorphic gold pattern",
+  "expect": {
+    "band": "candidate",
+    "fidelity": 1,
+    "autoInsertEnabled": false
+  },
+  "humanAdjudication": "proposed"
+}
