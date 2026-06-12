@@ -1,0 +1,23 @@
+{
+  "name": "@usc/gate",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --import tsx --test \"test/*.test.ts\""
+  },
+  "dependencies": {
+    "@usc/kernel": "workspace:*",
+    "@usc/runtime": "workspace:*",
+    "@usc/shared": "workspace:*",
+    "@usc/store": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0"
+  }
+}

@@ -21,6 +21,31 @@ importers:
         specifier: ^8.61.0
         version: 8.61.0(eslint@10.5.0)(typescript@5.9.3)
 
+  apps/gate:
+    dependencies:
+      '@usc/kernel':
+        specifier: workspace:*
+        version: link:../../packages/kernel
+      '@usc/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+      '@usc/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@usc/store':
+        specifier: workspace:*
+        version: link:../../packages/store
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.19.21
+      tsx:
+        specifier: ^4.19.0
+        version: 4.22.4
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
   packages/kernel:
     dependencies:
       '@usc/shared':

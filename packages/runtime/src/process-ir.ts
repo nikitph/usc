@@ -35,7 +35,7 @@ export function buildProcessIrLite(events: readonly DetectedEvent[]): ProcessIrL
 
 export function classifyEventText(text: string): RuntimeEventType {
   const normalized = text.toLowerCase();
-  if (matches(normalized, ["sudo", "admin", "privileged", "permission", "approve", "authorized"])) {
+  if (matches(normalized, ["sudo", "admin", "privileged", "permission", "approve", "approval", "authorized"])) {
     return "privileged_transition";
   }
   if (matches(normalized, ["delete", "deleted", "drop", "dropped", "destroy", "remove", "removed"])) {

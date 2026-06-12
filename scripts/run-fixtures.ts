@@ -1,4 +1,5 @@
 // Packet K-06 (Approved-Protected-Change: K-06).
+// Packet M1-04 (Approved-Protected-Change: M1-04).
 // Discovers adjudicated fixtures, runs implemented runners, and loudly SKIPs
 // registered future runners. A fixture may never pass by omission.
 
@@ -8,6 +9,7 @@ import { fileURLToPath } from "node:url";
 
 import { ExtractionCaseSchema, KernelFixtureSchema, TrapFixtureSchema } from "@usc/shared";
 
+import { createDefaultActionGateService } from "../apps/gate/src/index.ts";
 import { evaluate } from "../packages/kernel/src/evaluate.ts";
 import type { Fact } from "../packages/kernel/src/facts/types.ts";
 import { loadRulebase } from "../packages/kernel/src/rulebase/load.ts";
@@ -24,19 +26,26 @@ const rulebase = loadRulebase();
 
 const stats: RunStats = { passed: [], skipped: [], failed: [] };
 
-for (const filePath of collectJsonFixtures(FIXTURES_ROOT)) {
-  runFixture(filePath, stats);
+main().catch((error: unknown) => {
+  console.error(errorMessage(error));
+  process.exit(1);
+});
+
+async function main(): Promise<void> {
+  for (const filePath of collectJsonFixtures(FIXTURES_ROOT)) {
+    await runFixture(filePath, stats);
+  }
+
+  for (const line of stats.passed) console.log(`PASS ${line}`);
+  for (const line of stats.skipped) console.warn(`SKIP ${line}`);
+  for (const line of stats.failed) console.error(`FAIL ${line}`);
+
+  console.log(
+    `fixtures: ${stats.passed.length} passed, ${stats.skipped.length} skipped, ${stats.failed.length} failed`,
+  );
+
+  if (stats.failed.length > 0) process.exit(1);
 }
-
-for (const line of stats.passed) console.log(`PASS ${line}`);
-for (const line of stats.skipped) console.warn(`SKIP ${line}`);
-for (const line of stats.failed) console.error(`FAIL ${line}`);
-
-console.log(
-  `fixtures: ${stats.passed.length} passed, ${stats.skipped.length} skipped, ${stats.failed.length} failed`,
-);
-
-if (stats.failed.length > 0) process.exit(1);
 
 function collectJsonFixtures(directory: string): string[] {
   const collected: string[] = [];
@@ -52,7 +61,7 @@ function collectJsonFixtures(directory: string): string[] {
   return collected;
 }
 
-function runFixture(filePath: string, runStats: RunStats): void {
+async function runFixture(filePath: string, runStats: RunStats): Promise<void> {
   const displayPath = relative(REPO_ROOT, filePath);
   try {
     const parsed = JSON.parse(readFileSync(filePath, "utf8")) as unknown;
@@ -69,8 +78,8 @@ function runFixture(filePath: string, runStats: RunStats): void {
         runStats.passed.push(displayPath);
         return;
       case "trap":
-        TrapFixtureSchema.parse(parsed);
-        runStats.skipped.push(`${displayPath} (trap/action-gate runner lands with MVP-1)`);
+        await runTrapFixture(displayPath, parsed);
+        runStats.passed.push(displayPath);
         return;
       case "store":
         runStats.skipped.push(`${displayPath} (store runner lands with store packets)`);
@@ -83,6 +92,43 @@ function runFixture(filePath: string, runStats: RunStats): void {
     }
   } catch (error) {
     runStats.failed.push(`${displayPath}: ${errorMessage(error)}`);
+  }
+}
+
+async function runTrapFixture(displayPath: string, rawFixture: unknown): Promise<void> {
+  const fixture = TrapFixtureSchema.parse(rawFixture);
+  const service = createDefaultActionGateService(() => undefined);
+  const response = await service.handle(fixture.input);
+  if (response.terminalValidity !== fixture.expect.terminalValidity) {
+    throw new FixtureRunnerError(
+      displayPath,
+      `expected terminalValidity ${fixture.expect.terminalValidity}, got ${response.terminalValidity}`,
+    );
+  }
+  if (response.verdict !== fixture.expect.verdict) {
+    throw new FixtureRunnerError(
+      displayPath,
+      `expected verdict ${fixture.expect.verdict}, got ${response.verdict}`,
+    );
+  }
+  if (fixture.expect.mustNotContain?.verdict !== undefined && response.verdict === fixture.expect.mustNotContain.verdict) {
+    throw new FixtureRunnerError(displayPath, `verdict must not be ${response.verdict}`);
+  }
+  for (const expectedKind of fixture.expect.gapKinds ?? []) {
+    if (!response.gaps.some((gap) => gap.kind === expectedKind)) {
+      throw new FixtureRunnerError(
+        displayPath,
+        `expected gate gap kind ${expectedKind}, got [${response.gaps.map((gap) => gap.kind).join(", ")}]`,
+      );
+    }
+  }
+  for (const expectedText of fixture.expect.rationaleMentions ?? []) {
+    if (!response.rationale.some((line) => line.toLowerCase().includes(expectedText.toLowerCase()))) {
+      throw new FixtureRunnerError(
+        displayPath,
+        `expected rationale to mention ${JSON.stringify(expectedText)}, got ${JSON.stringify(response.rationale)}`,
+      );
+    }
   }
 }
 
