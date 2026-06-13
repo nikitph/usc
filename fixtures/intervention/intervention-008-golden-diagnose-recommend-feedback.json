@@ -1,0 +1,11 @@
+{
+  "runner": "intervention",
+  "name": "golden diagnose to recommend to feedback story",
+  "operation": "runGoldenInterventionSmoke",
+  "expect": {
+    "recommendation": "recommendation:golden-expired-authority",
+    "feedbackOutcome": "accepted",
+    "artifactKinds": ["graft_plan", "recommendation", "feedback_event"]
+  },
+  "adjudication": "Approved canonical golden story: expired authority before terminal closure flows through diagnosis, recommendation, emitted review artifacts, and accepted feedback."
+}

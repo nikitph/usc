@@ -1,0 +1,12 @@
+{
+  "runner": "intervention",
+  "name": "multi-symptom collapse ranking MVP heuristic",
+  "operation": "rankRecommendations",
+  "expect": {
+    "topRecommendation": "recommendation:collapse",
+    "diagnosisInformationGain": 2.35,
+    "warnings": ["anti-pattern:stale-authority"],
+    "emitterReady": false
+  },
+  "adjudication": "Accepted as MVP recommendation-ranking behavior. Feedback-derived empirical scoring is expected to replace or refine this heuristic later."
+}

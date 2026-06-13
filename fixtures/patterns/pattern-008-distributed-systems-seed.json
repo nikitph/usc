@@ -1,0 +1,12 @@
+{
+  "runner": "pattern",
+  "name": "distributed systems twin-domain seed direction",
+  "operation": "twinDomainSeedBundle",
+  "expect": {
+    "domain": "distributed-systems",
+    "patterns": ["pattern:distributed-systems:circuit-breaker"],
+    "antiPatterns": ["anti-pattern:distributed-systems:stale-cache-contract"],
+    "reviewState": "pending"
+  },
+  "adjudication": "Approved in principle as the distributed-systems side of the twin-domain seed direction. Generated artifact bundles remain examples, not live ground truth."
+}

@@ -1,0 +1,13 @@
+{
+  "runner": "runtime",
+  "name": "golden incident detects false terminal closure when authority expired",
+  "operation": "runIncidentWorkflow",
+  "expect": {
+    "terminalValidity": "invalid",
+    "verdict": "deny",
+    "falseTerminalDetected": true,
+    "retractedHypothesis": "h-terminal-success",
+    "productionWouldBeInvalid": true
+  },
+  "adjudication": "Approved canonical golden story: expired authority before terminal closure. This is the first protected runtime golden incident."
+}

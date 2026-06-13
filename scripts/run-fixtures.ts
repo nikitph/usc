@@ -7,12 +7,29 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { ExtractionCaseSchema, KernelFixtureSchema, TrapFixtureSchema } from "@usc/shared";
+import {
+  ExtractionCaseSchema,
+  InterventionFixtureSchema,
+  KernelFixtureSchema,
+  PatternFixtureSchema,
+  RuntimeFixtureSchema,
+  TrapFixtureSchema,
+} from "@usc/shared";
 
-import { createDefaultActionGateService } from "../apps/gate/src/index.ts";
+import {
+  createDefaultActionGateService,
+  runGoldenInterventionSmoke,
+  runIncidentWorkflow,
+} from "../apps/gate/src/index.ts";
 import { evaluate } from "../packages/kernel/src/evaluate.ts";
 import type { Fact } from "../packages/kernel/src/facts/types.ts";
 import { loadRulebase } from "../packages/kernel/src/rulebase/load.ts";
+import { rankRecommendations } from "../packages/runtime/src/recommendation.ts";
+import {
+  InMemoryPatternReviewQueue,
+  twinDomainSeedBundle,
+  type ArtifactEnvelope,
+} from "../packages/store/src/index.ts";
 
 interface RunStats {
   readonly passed: string[];
@@ -85,13 +102,139 @@ async function runFixture(filePath: string, runStats: RunStats): Promise<void> {
         runStats.skipped.push(`${displayPath} (store runner lands with store packets)`);
         return;
       case "runtime":
-        runStats.skipped.push(`${displayPath} (runtime runner lands with runtime packets)`);
+        await runRuntimeFixture(displayPath, parsed);
+        runStats.passed.push(displayPath);
+        return;
+      case "pattern":
+        runPatternFixture(displayPath, parsed);
+        runStats.passed.push(displayPath);
+        return;
+      case "intervention":
+        await runInterventionFixture(displayPath, parsed);
+        runStats.passed.push(displayPath);
         return;
       default:
         throw new FixtureRunnerError(displayPath, `unknown runner kind ${JSON.stringify(runner)}`);
     }
   } catch (error) {
     runStats.failed.push(`${displayPath}: ${errorMessage(error)}`);
+  }
+}
+
+async function runRuntimeFixture(displayPath: string, rawFixture: unknown): Promise<void> {
+  const fixture = RuntimeFixtureSchema.parse(rawFixture);
+  switch (fixture.operation) {
+    case "runIncidentWorkflow": {
+      const bundle = await runIncidentWorkflow();
+      if (bundle.response.terminalValidity !== fixture.expect.terminalValidity) {
+        throw new FixtureRunnerError(
+          displayPath,
+          `expected terminalValidity ${fixture.expect.terminalValidity}, got ${bundle.response.terminalValidity}`,
+        );
+      }
+      if (bundle.response.verdict !== fixture.expect.verdict) {
+        throw new FixtureRunnerError(displayPath, `expected verdict ${fixture.expect.verdict}, got ${bundle.response.verdict}`);
+      }
+      if (bundle.falseTerminalDetected !== fixture.expect.falseTerminalDetected) {
+        throw new FixtureRunnerError(
+          displayPath,
+          `expected falseTerminalDetected ${fixture.expect.falseTerminalDetected}, got ${bundle.falseTerminalDetected}`,
+        );
+      }
+      if (!bundle.hypothesisView.some((hypothesis) => hypothesis.id === fixture.expect.retractedHypothesis && hypothesis.status === "retracted")) {
+        throw new FixtureRunnerError(displayPath, `expected retracted hypothesis ${fixture.expect.retractedHypothesis}`);
+      }
+      if (bundle.productionWouldBeInvalid !== fixture.expect.productionWouldBeInvalid) {
+        throw new FixtureRunnerError(
+          displayPath,
+          `expected productionWouldBeInvalid ${fixture.expect.productionWouldBeInvalid}, got ${bundle.productionWouldBeInvalid}`,
+        );
+      }
+      return;
+    }
+  }
+}
+
+function runPatternFixture(displayPath: string, rawFixture: unknown): void {
+  const fixture = PatternFixtureSchema.parse(rawFixture);
+  switch (fixture.operation) {
+    case "twinDomainSeedBundle": {
+      const bundle = twinDomainSeedBundle();
+      const queue = new InMemoryPatternReviewQueue(() => "2026-06-13T00:00:00.000Z");
+      for (const artifact of bundle.artifacts) queue.submitCandidate(artifact, "fixture-runner");
+      const domainArtifacts = bundle.artifacts.filter((artifact) => artifactDomain(artifact) === fixture.expect.domain);
+      const patterns = domainArtifacts.filter((artifact) => artifact.kind === "pattern").map((artifact) => bodyId(artifact)).sort();
+      const antiPatterns = domainArtifacts.filter((artifact) => artifact.kind === "anti_pattern").map((artifact) => bodyId(artifact)).sort();
+      assertStringArray(displayPath, "patterns", patterns, fixture.expect.patterns);
+      assertStringArray(displayPath, "antiPatterns", antiPatterns, fixture.expect.antiPatterns);
+      const nonPending = queue.listEntries().filter((entry) => domainArtifacts.some((artifact) => artifact.id === entry.artifactId) && entry.state !== fixture.expect.reviewState);
+      if (nonPending.length > 0) {
+        throw new FixtureRunnerError(displayPath, `expected all seed review states to be ${fixture.expect.reviewState}`);
+      }
+      return;
+    }
+  }
+}
+
+async function runInterventionFixture(displayPath: string, rawFixture: unknown): Promise<void> {
+  const fixture = InterventionFixtureSchema.parse(rawFixture);
+  switch (fixture.operation) {
+    case "rankRecommendations": {
+      const ranked = rankRecommendations([
+        {
+          id: "recommendation:single",
+          title: "Patch missing feedback",
+          graftPlanArtifactId: "a".repeat(64),
+          collapsedSymptoms: ["missing_feedback"],
+          noveltyScore: 0.9,
+          antiPatternWarnings: [],
+        },
+        {
+          id: "recommendation:collapse",
+          title: "Add bounded feedback authority",
+          graftPlanArtifactId: "b".repeat(64),
+          collapsedSymptoms: ["missing_feedback", "stale_authority", "terminal_overclaim"],
+          noveltyScore: 0.8,
+          antiPatternWarnings: [{ antiPatternId: "anti-pattern:stale-authority", proximity: 0.5, severity: "medium" }],
+        },
+      ]);
+      const top = ranked[0];
+      if (top === undefined) throw new FixtureRunnerError(displayPath, "expected ranked recommendation");
+      if (fixture.expect.topRecommendation !== undefined && top.candidate.id !== fixture.expect.topRecommendation) {
+        throw new FixtureRunnerError(displayPath, `expected topRecommendation ${fixture.expect.topRecommendation}, got ${top.candidate.id}`);
+      }
+      if (fixture.expect.diagnosisInformationGain !== undefined && top.diagnosisInformationGain !== fixture.expect.diagnosisInformationGain) {
+        throw new FixtureRunnerError(
+          displayPath,
+          `expected diagnosisInformationGain ${fixture.expect.diagnosisInformationGain}, got ${top.diagnosisInformationGain}`,
+        );
+      }
+      if (fixture.expect.warnings !== undefined) {
+        assertStringArray(
+          displayPath,
+          "warnings",
+          top.candidate.antiPatternWarnings.map((warning) => warning.antiPatternId),
+          fixture.expect.warnings,
+        );
+      }
+      return;
+    }
+    case "runGoldenInterventionSmoke": {
+      const bundle = await runGoldenInterventionSmoke();
+      if (fixture.expect.feedbackOutcome !== undefined && bundle.feedbackOutcome !== fixture.expect.feedbackOutcome) {
+        throw new FixtureRunnerError(displayPath, `expected feedbackOutcome ${fixture.expect.feedbackOutcome}, got ${bundle.feedbackOutcome}`);
+      }
+      const recommendation = bundle.artifacts.find((artifact) => artifact.id === bundle.recommendationArtifactId);
+      if (fixture.expect.recommendation !== undefined && recommendation?.body["id"] !== fixture.expect.recommendation) {
+        throw new FixtureRunnerError(displayPath, `expected recommendation ${fixture.expect.recommendation}, got ${JSON.stringify(recommendation?.body["id"])}`);
+      }
+      for (const expectedKind of fixture.expect.artifactKinds ?? []) {
+        if (!bundle.artifacts.some((artifact) => artifact.kind === expectedKind)) {
+          throw new FixtureRunnerError(displayPath, `expected artifact kind ${expectedKind}`);
+        }
+      }
+      return;
+    }
   }
 }
 
@@ -173,6 +316,35 @@ function runKernelFixture(displayPath: string, rawFixture: unknown): void {
       );
     }
   }
+}
+
+function assertStringArray(
+  displayPath: string,
+  label: string,
+  actual: readonly string[],
+  expected: readonly string[],
+): void {
+  const sortedActual = [...actual].sort();
+  const sortedExpected = [...expected].sort();
+  if (JSON.stringify(sortedActual) !== JSON.stringify(sortedExpected)) {
+    throw new FixtureRunnerError(
+      displayPath,
+      `expected ${label} ${JSON.stringify(sortedExpected)}, got ${JSON.stringify(sortedActual)}`,
+    );
+  }
+}
+
+function artifactDomain(artifact: ArtifactEnvelope): string | undefined {
+  const domain = artifact.body["domain"];
+  return typeof domain === "string" ? domain : undefined;
+}
+
+function bodyId(artifact: ArtifactEnvelope): string {
+  const id = artifact.body["id"];
+  if (typeof id !== "string") {
+    throw new FixtureRunnerError(artifact.id, "artifact body id is required");
+  }
+  return id;
 }
 
 function runnerKind(value: unknown): string | undefined {

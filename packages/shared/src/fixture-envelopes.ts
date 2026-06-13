@@ -107,6 +107,63 @@ export const TrapFixtureSchema = z
   })
   .strict();
 
+const AdjudicationSchema = z.string().min(1);
+
+export const RuntimeFixtureSchema = z
+  .object({
+    runner: z.literal("runtime"),
+    name: z.string().min(1),
+    operation: z.enum(["runIncidentWorkflow"]),
+    expect: z
+      .object({
+        terminalValidity: VerdictValueSchema,
+        verdict: ExpectedGateVerdictSchema,
+        falseTerminalDetected: z.boolean(),
+        retractedHypothesis: z.string().min(1),
+        productionWouldBeInvalid: z.boolean(),
+      })
+      .strict(),
+    adjudication: AdjudicationSchema,
+  })
+  .strict();
+
+export const PatternFixtureSchema = z
+  .object({
+    runner: z.literal("pattern"),
+    name: z.string().min(1),
+    operation: z.enum(["twinDomainSeedBundle"]),
+    expect: z
+      .object({
+        domain: z.string().min(1),
+        patterns: z.array(z.string().min(1)).min(1),
+        antiPatterns: z.array(z.string().min(1)).min(1),
+        reviewState: z.literal("pending"),
+      })
+      .strict(),
+    adjudication: AdjudicationSchema,
+  })
+  .strict();
+
+export const InterventionFixtureSchema = z
+  .object({
+    runner: z.literal("intervention"),
+    name: z.string().min(1),
+    operation: z.enum(["rankRecommendations", "runGoldenInterventionSmoke"]),
+    expect: z
+      .object({
+        topRecommendation: z.string().min(1).optional(),
+        diagnosisInformationGain: z.number().optional(),
+        warnings: z.array(z.string().min(1)).optional(),
+        emitterReady: z.literal(false).optional(),
+        recommendation: z.string().min(1).optional(),
+        feedbackOutcome: z.string().min(1).optional(),
+        artifactKinds: z.array(z.string().min(1)).optional(),
+      })
+      .strict(),
+    adjudication: AdjudicationSchema,
+  })
+  .strict();
+
 /**
  * Extraction benchmark cases (fixtures/extraction/, format per its README).
  * goldTokens are full MotifTokens — span grounding (INV-5) applies to gold
@@ -126,7 +183,10 @@ export const ExtractionCaseSchema = z
 
 export type KernelFixture = z.infer<typeof KernelFixtureSchema>;
 export type TrapFixture = z.infer<typeof TrapFixtureSchema>;
+export type RuntimeFixture = z.infer<typeof RuntimeFixtureSchema>;
+export type PatternFixture = z.infer<typeof PatternFixtureSchema>;
+export type InterventionFixture = z.infer<typeof InterventionFixtureSchema>;
 export type ExtractionCase = z.infer<typeof ExtractionCaseSchema>;
 
-/** Runner kinds declared in fixtures/README.md. store/runtime envelopes land with their packets. */
-export const DECLARED_RUNNER_KINDS = ["kernel", "store", "runtime", "trap"] as const;
+/** Runner kinds declared in fixtures/README.md plus adjudicated MVP pattern/intervention runners. */
+export const DECLARED_RUNNER_KINDS = ["kernel", "store", "runtime", "trap", "pattern", "intervention"] as const;

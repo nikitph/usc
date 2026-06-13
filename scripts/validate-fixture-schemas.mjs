@@ -18,7 +18,7 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const fixturesRoot = process.argv[2] ?? join(REPO_ROOT, "fixtures");
 
 /** Runner kinds declared in fixtures/README.md but whose envelope packet has not landed yet. */
-const ENVELOPE_PENDING_PACKET = { store: "store packets", runtime: "runtime packets" };
+const ENVELOPE_PENDING_PACKET = { store: "store packets" };
 
 function collectFixtureFiles(directory) {
   const collected = [];
@@ -40,6 +40,9 @@ function envelopeFor(filePath, fixture) {
   const runner = fixture?.runner;
   if (runner === "kernel") return { schema: envelopes.KernelFixtureSchema, failure: null };
   if (runner === "trap") return { schema: envelopes.TrapFixtureSchema, failure: null };
+  if (runner === "runtime") return { schema: envelopes.RuntimeFixtureSchema, failure: null };
+  if (runner === "pattern") return { schema: envelopes.PatternFixtureSchema, failure: null };
+  if (runner === "intervention") return { schema: envelopes.InterventionFixtureSchema, failure: null };
   if (runner in ENVELOPE_PENDING_PACKET) {
     return { schema: null, failure: `runner "${runner}" has no envelope yet (lands with ${ENVELOPE_PENDING_PACKET[runner]}) — extend fixture-envelopes.ts there` };
   }

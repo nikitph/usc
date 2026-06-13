@@ -1,0 +1,12 @@
+{
+  "runner": "pattern",
+  "name": "cooperative bank compliance twin-domain seed direction",
+  "operation": "twinDomainSeedBundle",
+  "expect": {
+    "domain": "cooperative-bank-compliance",
+    "patterns": ["pattern:cooperative-bank-compliance:exposure-cutoff"],
+    "antiPatterns": ["anti-pattern:cooperative-bank-compliance:expired-sanction"],
+    "reviewState": "pending"
+  },
+  "adjudication": "Approved in principle as the cooperative-bank-compliance side of the twin-domain seed direction. Generated artifact bundles remain examples, not live ground truth."
+}
