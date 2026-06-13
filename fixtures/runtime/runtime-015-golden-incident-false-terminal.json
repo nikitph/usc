@@ -9,5 +9,5 @@
     "retractedHypothesis": "h-terminal-success",
     "productionWouldBeInvalid": true
   },
-  "adjudication": "Approved canonical golden story: expired authority before terminal closure. This is the first protected runtime golden incident."
+  "adjudication": "Approved canonical golden story for USC pipeline behavior: expired authority before terminal closure. This is the first protected runtime golden incident and does not require creator adjudication of downstream domain-specific failure modes."
 }

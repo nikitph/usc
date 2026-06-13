@@ -8,5 +8,5 @@
     "warnings": ["anti-pattern:stale-authority"],
     "emitterReady": false
   },
-  "adjudication": "Accepted as MVP recommendation-ranking behavior. Feedback-derived empirical scoring is expected to replace or refine this heuristic later."
+  "adjudication": "Accepted as MVP recommendation-ranking behavior and pipeline behavior, not as an adjudication of domain fitness. Feedback-derived empirical scoring from downstream users/operators is expected to replace or refine this heuristic later."
 }

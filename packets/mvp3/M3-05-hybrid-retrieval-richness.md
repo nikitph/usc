@@ -4,5 +4,5 @@
 **Fixtures in scope:** draft hybrid retrieval ranking and richness-ladder fixtures into fixtures/_proposed/
 **Out of scope:** intervention graft plans; auto-insert
 **Deliverables:** vector+structural retrieval API, richness ladder annotations, five transfer write-up artifacts, dashboard read-only retrieval view.
-**Exit:** make verify green; five transfer write-ups generated for expert review; auto-insert remains disabled.
+**Exit:** make verify green; five transfer write-ups generated for pipeline review; auto-insert remains disabled. Domain fitness is deferred to downstream user/operator feedback.
 **Protected paths touched:** none.

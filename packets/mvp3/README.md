@@ -9,4 +9,4 @@ Packets:
 - M3-04 — Review queue and hand-seeded twin domains.
 - M3-05 — Hybrid retrieval and richness ladders.
 
-MVP 3 exit: five transfer write-ups pass expert review; fidelity scorer calibration report exists; auto-insert remains disabled.
+MVP 3 exit: five transfer write-ups pass pipeline review for generation, ranking, provenance, and uncertainty preservation; fidelity scorer calibration report exists; auto-insert remains disabled. Domain-specific fitness is owned by downstream users/operators through feedback, not by creator adjudication.

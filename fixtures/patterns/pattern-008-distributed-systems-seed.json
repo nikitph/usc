@@ -8,5 +8,5 @@
     "antiPatterns": ["anti-pattern:distributed-systems:stale-cache-contract"],
     "reviewState": "pending"
   },
-  "adjudication": "Approved in principle as the distributed-systems side of the twin-domain seed direction. Generated artifact bundles remain examples, not live ground truth."
+  "adjudication": "Approved as a seed direction for exercising the USC transfer pipeline, not as an adjudication of domain fitness. Domain-specific failure modes are owned by downstream users/operators through feedback. Generated artifact bundles remain examples, not live ground truth."
 }

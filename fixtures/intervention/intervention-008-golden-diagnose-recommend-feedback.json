@@ -7,5 +7,5 @@
     "feedbackOutcome": "accepted",
     "artifactKinds": ["graft_plan", "recommendation", "feedback_event"]
   },
-  "adjudication": "Approved canonical golden story: expired authority before terminal closure flows through diagnosis, recommendation, emitted review artifacts, and accepted feedback."
+  "adjudication": "Approved canonical golden story for USC pipeline behavior: expired authority before terminal closure flows through diagnosis, recommendation, emitted review artifacts, and accepted feedback. This does not assign the creator responsibility for downstream domain-specific failure modes."
 }

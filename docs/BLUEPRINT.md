@@ -338,7 +338,7 @@ Replace v0.2's 50 generic seed patterns with **deep seeding of one twin pair** w
 - **Domain A: distributed systems / agent infrastructure** (public corpus is excellent: papers, postmortems, design docs).
 - **Domain B: cooperative banking compliance and reconciliation** (RBI/NABARD circulars, concurrent-audit findings, CBS reconciliation workflows, NPA processes — a corpus most competitors cannot touch, and the paper's own opening example: divergent copies converging under constraints).
 
-Target: ~30 patterns + ~15 anti-patterns per domain, hand-compiled to full schema, with at least **5 demonstrated A↔B transfers** written up end-to-end (e.g., reconciliation-job pattern ↔ inter-branch DCCB reconciliation; circuit breaker ↔ exposure-limit cutoffs; cache-staleness contract ↔ stale-authority/expired-sanction handling; idempotency keys ↔ duplicate-entry suppression in CBS; canary deploy ↔ pilot-branch policy rollout). These five write-ups are simultaneously the validation of the core thesis, the demo content, and the first calibration data. Generic breadth (biology, governance, markets) is added *after* the twin pair proves the pipeline, because density beats breadth for transfer quality — the paper says so itself (dense regions seed sparse ones).
+Target: ~30 patterns + ~15 anti-patterns per domain, hand-compiled to full schema, with at least **5 demonstrated A↔B transfer candidates** written up end-to-end (e.g., reconciliation-job pattern ↔ inter-branch DCCB reconciliation; circuit breaker ↔ exposure-limit cutoffs; cache-staleness contract ↔ stale-authority/expired-sanction handling; idempotency keys ↔ duplicate-entry suppression in CBS; canary deploy ↔ pilot-branch policy rollout). These five write-ups validate that USC generated, ranked, routed, and preserved provenance for the transfer candidates; they are not creator adjudications of domain truth. Domain-specific failure modes are owned by downstream users/operators and enter the system as feedback events and empirical transfer scores. Generic breadth (biology, governance, markets) is added *after* the twin pair proves the pipeline, because density beats breadth for transfer quality — the paper says so itself (dense regions seed sparse ones).
 
 ---
 
@@ -384,7 +384,7 @@ The benchmark suite:
 2. **Kernel verdict regression suite** — hand-built ASTs with known verdicts for all five semantic checks, including unknown-propagation cases; before the rule interpreter ships.
 3. **Trap set for overconfident closure** — 50+ adversarial cases where the *correct* answer is unknown or invalid despite success-shaped surface language (the tool returned 200 but the authority had expired; the migration "completed" but reconciliation evidence is stale). **Overconfident closure rate on the trap set is the headline safety metric**, exactly as v0.2 said — v0.3 adds the labeled set that makes it measurable, and adds the symmetric metric: **over-cautious non-closure rate** (valid closures wrongly marked unknown), because a gate that cries unknown constantly gets unplugged. Both trend lines ship on the internal dashboard from MVP 1.
 4. **Golden incident compilations** — 10–15 fully hand-compiled real cases (public postmortems + anonymized cooperative-banking cases) with adjudicated ASTs, diagnoses, and expected recommendations; the end-to-end regression test.
-5. **Transfer validation set** — the 5 twin-domain transfer write-ups (§8.3), scored by domain experts.
+5. **Transfer validation set** — the 5 twin-domain transfer write-ups (§8.3), initially validating USC pipeline behavior only. Domain fitness is scored later by downstream users/operators through feedback events and empirical transfer outcomes.
 
 ---
 
@@ -396,9 +396,9 @@ The benchmark suite:
 
 **MVP 2 — Evidence Fixpoint Engine (4 wk).** Chunked recovery, joins, retraction propagation, decay-as-TTL, hypothesis views; incident-from-logs workflow. *Exit: golden incident compilations reproduce adjudicated root causes including ≥1 false-terminal detection.*
 
-**MVP 3 — Twin-domain Pattern Plane (5–6 wk).** Pattern + anti-pattern schemas, WL canonical dedup, fidelity scorer + calibration gold sets, review queue, hand-seeded twin domains (§8.3), hybrid retrieval, richness ladders. *Exit: the 5 transfer write-ups pass expert review; fidelity scorer calibration report exists; auto-insert still disabled.*
+**MVP 3 — Twin-domain Pattern Plane (5–6 wk).** Pattern + anti-pattern schemas, WL canonical dedup, fidelity scorer + calibration gold sets, review queue, hand-seeded twin domains (§8.3), hybrid retrieval, richness ladders. *Exit: the 5 transfer write-ups pass pipeline review for generation, ranking, provenance, and uncertainty preservation; fidelity scorer calibration report exists; auto-insert still disabled.*
 
-**MVP 4 — Intervention Plane (4–5 wk).** Valence unification + graft plans, AST modification with recompile, recommendations ranked by multi-symptom collapse, codegen for two emitter targets (engineering spec; compliance checklist), feedback capture. *Exit: end-to-end diagnose→recommend→feedback on golden cases.*
+**MVP 4 — Intervention Plane (4–5 wk).** Valence unification + graft plans, AST modification with recompile, recommendations ranked by multi-symptom collapse, codegen for two emitter targets (engineering spec; compliance checklist), feedback capture. *Exit: end-to-end diagnose→recommend→feedback on golden cases, with feedback explicitly carrying downstream outcome ownership.*
 
 **MVP 5 — Automated ingestion + controlled auto-insert (ongoing).** Large-scale ingestion, candidate mining, calibrated auto-insert (precision ≥ 0.95 bar from v0.2 retained), KG visualization, empty-cell and trajectory analytics surfaced as product.
 
