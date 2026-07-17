@@ -16,6 +16,14 @@ import {
   verdictClass,
   type TrapRun,
 } from "../src/dashboard.ts";
+import {
+  backendStatus,
+  blockedAnalysis,
+  canSubmit,
+  sampleAnalysis,
+  sampleRequest,
+  summarizeMotifs,
+} from "../src/lib/product-analysis.ts";
 
 test("should_reflect_current_trap_fixture_results", () => {
   const metrics = dashboardMetrics(trapRuns);
@@ -69,4 +77,16 @@ test("should_order_recommendation_rows_by_diagnosis_gain_rank", () => {
 test("should_count_feedback_outcomes_for_dashboard_summary", () => {
   assert.equal(feedbackOutcomeCounts(feedbackSummaryRows).accepted, 1);
   assert.equal(feedbackOutcomeCounts(feedbackSummaryRows).failed, 0);
+});
+
+test("should_keep_product_submit_path_on_deepseek_only", () => {
+  assert.equal(canSubmit(sampleRequest), true);
+  assert.equal(canSubmit({ ...sampleRequest, extractor: "deterministic-test-double" }), false);
+  assert.equal(canSubmit({ ...sampleRequest, caseText: "too short" }), false);
+});
+
+test("should_summarize_product_motifs_and_backend_status", () => {
+  assert.deepEqual(summarizeMotifs(sampleAnalysis.tokens), ["authority", "feedback", "terminal_state"]);
+  assert.equal(backendStatus(sampleAnalysis), "research mode, experimental extraction");
+  assert.equal(backendStatus(blockedAnalysis("missing env")), "backend not configured");
 });
